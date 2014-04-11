@@ -110,6 +110,8 @@ void TestIterate(switchState * sstate, switchLinks ** head)
 void switchInitState(switchState * sstate, int phys)
 {
    sstate->physid = phys;
+   sstate->rootid = phys;
+   printf("Switch %d's root is %d\n", sstate->physid, sstate->rootid);
 }
 
 void switchRecvPacketBuff(switchState * sstate, int in_id, packetBuffer * pbuff)
