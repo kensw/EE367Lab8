@@ -32,7 +32,7 @@
 #include "main.h"
 #include "utilities.h"
 #include "link.h"
-#include "man.h"
+#include "man.h"    
 #include "host.h"
 
 #define EMPTY_ADDR  0xffff  /* Indicates that the empty address */
