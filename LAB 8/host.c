@@ -288,6 +288,7 @@ void hostInitSendPacketBuff(packetBuffer * packetbuff)
 {
 packetbuff->valid = 0;
 packetbuff->new = 0;
+//packetbuff->type = 1; // Hosts can only send tree packets
 }
 
 

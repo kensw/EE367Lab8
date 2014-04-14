@@ -121,8 +121,11 @@ int linkReceive(LinkInfo * link, packetBuffer * pbuff)
             
             findWord(word, buffer, 3); /* Length */
             pbuff->length = ascii2Int(word);
+			
+            findWord(word, buffer, 4); /* Type */
+            pbuff->type = ascii2Int(word);
             
-            findWord(word, buffer, 4); /* Payload */
+            findWord(word, buffer, 5); /* Payload */
             
             /*
              * We will transform the payload so that
@@ -199,6 +202,10 @@ int linkSend(LinkInfo * link, packetBuffer * pbuff)
     
     int2Ascii(word, pbuff->length);  /* Append payload length */
     appendWithSpace(sendbuff, word);
+	
+    int2Ascii(word, pbuff->type);  /* Append payload type */
+    appendWithSpace(sendbuff, word);
+	
     
     /*
      * We will transform the payload so that
@@ -232,7 +239,9 @@ int linkSend(LinkInfo * link, packetBuffer * pbuff)
     }
     
     /* Used for DEBUG -- trace packets being sent */
-    printf("Link %d transmitted\n",link->linkID);
+    
+	if(pbuff->type != 1)
+	printf("Link %d transmitted\n",link->linkID);
     return -1;
 }
 

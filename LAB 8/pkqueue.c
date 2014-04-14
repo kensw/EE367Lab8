@@ -84,6 +84,17 @@ void deQueue(PacketQueue * pq)
    }
 }
 
+
+int isLocalPacket(const PacketQueue *pq)
+{
+   if(pq->head == NULL) {
+      return 1;
+   } else {
+      return 0;
+   }
+}
+
+
 /*
 //This is just driver code for testing purposes
 int main()

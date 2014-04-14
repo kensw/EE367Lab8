@@ -13,8 +13,7 @@ typedef struct {
    int distance; /* Distance to root */
    int parent; /* The parent to the switch */
    struct FWTable * ftable; //Container of forwarding data
-   struct PacketQueue * recvPQ; //Container of tree packets
-   struct PacketQueue * recvLocalPQ; //Container of local packets
+   struct PacketQueue * recvPQ; //Container of packets
    struct switchLinks * sLinks; //Container of all connections   
 } switchState;
 

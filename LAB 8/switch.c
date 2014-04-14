@@ -107,15 +107,27 @@ void TestIterate(switchState * sstate, switchLinks ** head)
    }
 }
 
+
+
+////////////////////////////////////////////////////////////////////////////////////
 void switchInitState(switchState * sstate, int phys)
 {
    sstate->physid = phys;
    sstate->rootid = phys;
+   sstate->distance = 0;
+   sstate->parent = 0;
    printf("Switch %d's root is %d\n", sstate->physid, sstate->rootid);
 }
 
 void switchRecvPacketBuff(switchState * sstate, int in_id, packetBuffer * pbuff)
 {
+
+	if(pbuff->type != 1)
+	printf("RecvPacketBuff pbuff->type = %d\n", pbuff->type);
+	
+
+	if(pbuff->type == 0)
+	{
    pbuff->valid = 1;
    int src = pbuff->srcaddr;
    LinkInfo * out = linkSearch(&(sstate->sLinks), in_id);
@@ -138,7 +150,22 @@ void switchRecvPacketBuff(switchState * sstate, int in_id, packetBuffer * pbuff)
       }
    }
    enQueue((sstate->recvPQ), *pbuff, in_id);
-
+	}
+	
+	else if(pbuff->type == 1)
+	{
+		if(sstate->rootid > pbuff->payload[0])
+		{
+		sstate->rootid = pbuff->payload[0];
+		sstate->distance = pbuff->payload[2] + 1;
+		sstate->parent = pbuff->srcaddr;
+		printf("NEW Root of switch %d is %d\n NEW Distance of switch %d is %d\n NEW Parent of switch %d is %d\n", sstate->physid, sstate->rootid, sstate->physid, sstate->distance, sstate->physid, sstate->parent);
+	}
+  
+//  	   deQueue(sstate->recvPQ); //Pop top after sending
+  	   return;
+	}
+	
 }
 
 void switchSendAll(switchState * sstate, int src, packetBuffer * recv)
@@ -152,6 +179,30 @@ void switchSendAll(switchState * sstate, int src, packetBuffer * recv)
       ptr = ptr->next;
    }
    deQueue(sstate->recvPQ); //Pop top after sending
+}
+
+void switchSendAllLocal(switchState * sstate)
+{	
+	
+	packetBuffer netpacket;
+	netpacket.srcaddr = sstate->physid;
+	netpacket.length = 200;
+	netpacket.type = 1;
+	netpacket.payload[0] = sstate->rootid;
+	netpacket.payload[2] = sstate->distance;
+	netpacket.payload[3] = sstate->parent;
+	
+//	printf("Switch %d, Netpacket payload[0]-rootid = %d\n", sstate->physid, netpacket.payload[0]);
+//	printf("Switch %d, Netpacket payload[2]-distance = %d\n", sstate->physid, netpacket.payload[2]);
+//	printf("Switch %d, Netpacket payload[3]-parent = %d\n", sstate->physid, netpacket.payload[3]);
+	//printf("Sending: Root of %d is: %d\n", sstate->physid, netpacket->payload[0]);
+	
+   //Head of link container
+   switchLinks * ptr = sstate->sLinks;
+   while(ptr != NULL) {
+         linkSend(&(ptr->linkout), &netpacket);
+      ptr = ptr->next;
+   }
 }
 
 void switchSendPacketBuff(switchState * sstate)
@@ -174,7 +225,9 @@ void switchSendPacketBuff(switchState * sstate)
       deQueue(sstate->recvPQ); //Pop top after sending
    }
   //debugtable(&(sstate->ftable));
+
 }
+
 
 void scanAllLinks(switchState * sstate, packetBuffer * pb)
 {  
@@ -182,8 +235,9 @@ void scanAllLinks(switchState * sstate, packetBuffer * pb)
    while(ptr != NULL){
       int data = 0;
       data = linkReceive(&(ptr->linkin), pb);
+
       if(data != -1) {
-    //     debug3(ptr->linkin.linkID, sstate->physid);
+		       debug3(ptr->linkin.linkID, sstate->physid);
          switchRecvPacketBuff(sstate, ptr->linkin.linkID, pb);
       }
       //Check something is being sent through link
@@ -197,16 +251,25 @@ void switchSetLinkHead(switchState * sstate, switchLinks * head)
 }
 
 void switchMain(switchState * sstate)
-{
+{		
    sstate->recvPQ = createQueue();
    sstate->ftable = NULL;
+   
+   int count = 10;
+  
    while(1){
-      packetBuffer pb;
-      scanAllLinks(sstate, &pb); 
-      if(!isEmpty(sstate->recvPQ)) {
-         switchSendPacketBuff(sstate);
-      }
-   //   usleep(100000);
+	packetBuffer pb;
+     scanAllLinks(sstate, &pb); 
+    	
+	if(!isEmpty(sstate->recvPQ)) {		  
+       switchSendPacketBuff(sstate);
+	}   
+	//else if(count == 0) 
+	//switchSendAllLocal(sstate);
+	
+	 usleep(100000);
    }
+
+   count--;
 }
 

@@ -6,10 +6,12 @@ typedef struct { /* Packet buffer */
    int srcaddr;  /* Source address */
    int dstaddr;  /* Destination addres */
    int length;   /* Length of packet */
+   int type;   /* 0 Indicates local packet, 1 indicates tree packet */
    char payload[PAYLOAD_LENGTH + 1];  /* Payload section */
    int valid;   /* Indicates if the contents is valid */ 
    int new;     /* Indicates if the contents has been downloaded */
    int sendrcv;
+   
 } packetBuffer;
 
 
@@ -21,10 +23,21 @@ typedef struct{
 	char payload[NEW_PAYLOAD_L+1]; // or:  NEW_PAYLOAD_L];
 } payload;
 
+//This new packet will also have a container that is sent in place of the current payload
+
+typedef struct{
+	int type;  //0 indicates first or middle packet, 1 indicates last
+	int length; // Should be 4, for rest of the packet
+	int root; // current root for the switch
+	int distance; // distance value
+	int child; // equals 1 if switch is child of it's neighbor
+} payloadLocal;
+
+
 typedef struct { /* Packet buffer */
    int srcaddr;  /* Source address */
    int dstaddr;  /* Destination addres */
-   payload load;  /* Payload section */
+   payloadLocal load;  /* Payload section */
    int valid;   /* Indicates if the contents is valid */ 
    int new;     /* Indicates if the contents has been downloaded */
 } myPacketBuffer;
