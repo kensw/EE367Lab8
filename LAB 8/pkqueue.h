@@ -3,14 +3,14 @@
  */
 
 typedef struct PKQueue {
-   int link_source;
-   packetBuffer rcvPKB; //Stores Packetbuffers
-   struct PKQueue * next;
+    int link_source;
+    packetBuffer rcvPKB; //Stores Packetbuffers
+    struct PKQueue * next;
 } PKQueue;
 
 typedef struct PacketQueue{
-   struct PKQueue * head;
-   struct PKQueue * tail;
+    struct PKQueue * head;
+    struct PKQueue * tail;
 } PacketQueue;
 
 

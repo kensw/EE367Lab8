@@ -48,6 +48,8 @@
 
 #define PIPEREAD  0
 #define PIPEWRITE 1
+#define TENMILLISEC 10000
+
 
 /* Closes a link */
 int linkClear(LinkInfo * link)
@@ -171,6 +173,10 @@ int linkSend(LinkInfo * link, packetBuffer * pbuff)
     char lowbits;
     char highbits;
     
+    
+    
+    //start sending loop here
+
     /* Check if this send should be aborted */
     if (pbuff->valid == 0) {
         printf("packet invalid\n");
@@ -187,10 +193,12 @@ int linkSend(LinkInfo * link, packetBuffer * pbuff)
         return -1;
     }
     
-    
+    //initialization
     sendbuff[0] = ' ';  /* Start message with a space */
     sendbuff[1] = '\0';
     
+    
+    //add addresses and PAYLOAD length
     int2Ascii(word, pbuff->dstaddr);  /* Append destination address */
     appendWithSpace(sendbuff, word);
     
@@ -213,6 +221,11 @@ int linkSend(LinkInfo * link, packetBuffer * pbuff)
      * and the second byte is the low order bits.
      */
     
+    //build payload
+    
+    //1st byte is the type
+    
+    //then start with the message
     for (k = 0; k < pbuff->length; k++) {
         lowbits = pbuff->payload[k];
         highbits = lowbits;
@@ -220,16 +233,19 @@ int linkSend(LinkInfo * link, packetBuffer * pbuff)
         highbits = highbits & 15; /* Mask out all bits except the last four */
         lowbits = lowbits & 15;
         newpayload[2*k] = highbits + 'a';
-        newpayload[2*k+1] = lowbits + 'a'; 
+        newpayload[2*k+1] = lowbits + 'a';
     }
     
     newpayload[2*k] = '\0';
     
     appendWithSpace(sendbuff, newpayload);
     
+    //send message here
     if (link->linkType==UNIPIPE) {
         write(link->uniPipeInfo.fd[PIPEWRITE],sendbuff,strlen(sendbuff));
     }
+    
+    //end sending loop here
     
     /* Used for DEBUG -- trace packets being sent */
     printf("Link %d transmitted\n",link->linkID);

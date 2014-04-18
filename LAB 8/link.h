@@ -17,22 +17,22 @@ enum UniPipeType {BLOCKING, NONBLOCKING};
 //and the src is the hostID
 
 typedef struct {
-   enum UniPipeType pipeType;
-   int         fd[2];
-   int         physIdSrc;
-   int	       physIdDst;
+    enum UniPipeType pipeType;
+    int         fd[2];
+    int         physIdSrc;
+    int	       physIdDst;
 } UniPipeInfo;
 
 typedef struct {  /* Has all the information to implement a link */
-   int linkID;             /* ID for the link */
-   enum LinkType linkType; /* The type of link */
-   UniPipeInfo uniPipeInfo; /* If the link is a pipe, this is the information */
+    int linkID;             /* ID for the link */
+    enum LinkType linkType; /* The type of link */
+    UniPipeInfo uniPipeInfo; /* If the link is a pipe, this is the information */
 } LinkInfo;
 
 
 typedef struct {
-   int numlinks;
-   LinkInfo link[NUMLINKS];
+    int numlinks;
+    LinkInfo link[NUMLINKS];
 } linkArrayType;
 
 /* Transmit the packet in pbuff on the link */

@@ -4,7 +4,7 @@
 
 #define TENMILLISEC 10000
 
-main()
+void tenmillsleep()
 {
     int i, k;
     
@@ -14,8 +14,6 @@ main()
         }
         printf("%d\n",i);
     }
-    
-    
 }
 
 

@@ -21,6 +21,7 @@
 		937078E618F79CD400C83002 /* utilities.c in Sources */ = {isa = PBXBuildFile; fileRef = 937078D718F79CD400C83002 /* utilities.c */; };
 		937078E718F7AD5C00C83002 /* man.c in Sources */ = {isa = PBXBuildFile; fileRef = 937078C118F79CD400C83002 /* man.c */; };
 		937078EB18F7AF3E00C83002 /* fwtable.c in Sources */ = {isa = PBXBuildFile; fileRef = 937078EA18F7AF3E00C83002 /* fwtable.c */; };
+		93DD082718FB7B9800F7E165 /* sleep.c in Sources */ = {isa = PBXBuildFile; fileRef = 93DD082618FB7B9800F7E165 /* sleep.c */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -74,6 +75,8 @@
 		937078D818F79CD400C83002 /* utilities.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = utilities.h; sourceTree = "<group>"; };
 		937078E818F7AD8000C83002 /* man2.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = man2.c; sourceTree = "<group>"; };
 		937078EA18F7AF3E00C83002 /* fwtable.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = fwtable.c; sourceTree = "<group>"; };
+		93DD082618FB7B9800F7E165 /* sleep.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = sleep.c; sourceTree = "<group>"; };
+		93DD082818FB7BAD00F7E165 /* sleep.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = sleep.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -106,6 +109,8 @@
 		934722A518F79B29002163D3 /* LAB 8 */ = {
 			isa = PBXGroup;
 			children = (
+				93DD082618FB7B9800F7E165 /* sleep.c */,
+				93DD082818FB7BAD00F7E165 /* sleep.h */,
 				937078EA18F7AF3E00C83002 /* fwtable.c */,
 				937078E818F7AD8000C83002 /* man2.c */,
 				937078B718F79CD400C83002 /* fwtable.h */,
@@ -200,6 +205,7 @@
 				937078E718F7AD5C00C83002 /* man.c in Sources */,
 				937078E318F79CD400C83002 /* switchlink.c in Sources */,
 				937078DC18F79CD400C83002 /* main.c in Sources */,
+				93DD082718FB7B9800F7E165 /* sleep.c in Sources */,
 				937078E618F79CD400C83002 /* utilities.c in Sources */,
 				937078E418F79CD400C83002 /* testlink.c in Sources */,
 				937078E518F79CD400C83002 /* top.c in Sources */,

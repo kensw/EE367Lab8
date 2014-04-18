@@ -476,27 +476,27 @@ void manMain(manLinkArrayType * manLinkArray)
             manWaitForReply(&(manLinkArray->link[currhost]), cmd);
         }
         else if (cmd == 'r') {
-            manDownloadPacket(&(manLinkArray->link[currhost])); 
+            manDownloadPacket(&(manLinkArray->link[currhost]));
             manWaitForReply(&(manLinkArray->link[currhost]), cmd);
         }
         else if (cmd == 'u') {
-            manUploadPacket(&(manLinkArray->link[currhost])); 
+            manUploadPacket(&(manLinkArray->link[currhost]));
             manWaitForReply(&(manLinkArray->link[currhost]), cmd);
         }
         else if (cmd == 't') {
             k = manTransmitPacket(&(manLinkArray->link[currhost]));
             if (k==0) manWaitForReply(&(manLinkArray->link[currhost]), cmd);
         }
-        else if (cmd == 'h') 
+        else if (cmd == 'h')
             manDisplayHosts(currhost, manLinkArray->numlinks);
         
-        else if (cmd == 'c') 
+        else if (cmd == 'c')
             currhost = manChangeHost(manLinkArray->numlinks);
         
         else printf("***Invalid command, you entered %c\n", cmd);
     }
     printf("\n");
     
-} 
+}
 
 
