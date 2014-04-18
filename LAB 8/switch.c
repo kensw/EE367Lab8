@@ -107,8 +107,6 @@ void TestIterate(switchState * sstate, switchLinks ** head)
    }
 }
 
-
-
 ////////////////////////////////////////////////////////////////////////////////////
 void switchInitState(switchState * sstate, int phys)
 {
@@ -116,12 +114,14 @@ void switchInitState(switchState * sstate, int phys)
    sstate->rootid = phys;
    sstate->distance = 0;
    sstate->parent = 0;
+   sstate->numchild = 0;
    printf("Switch %d's root is %d\n", sstate->physid, sstate->rootid);
 }
 
 void switchRecvPacketBuff(switchState * sstate, int in_id, packetBuffer * pbuff)
 {
-
+	int i;
+	int childflag = 0;
 	if(pbuff->type != 1)
 	printf("RecvPacketBuff pbuff->type = %d\n", pbuff->type);
 	
@@ -152,19 +152,33 @@ void switchRecvPacketBuff(switchState * sstate, int in_id, packetBuffer * pbuff)
    enQueue((sstate->recvPQ), *pbuff, in_id);
 	}
 	
-	else if(pbuff->type == 1)
+	else if(pbuff->type == 1 && sstate->rootid > pbuff->payload[0])
 	{
-		if(sstate->rootid > pbuff->payload[0])
-		{
+
 		sstate->rootid = pbuff->payload[0];
 		sstate->distance = pbuff->payload[2] + 1;
 		sstate->parent = pbuff->srcaddr;
 		printf("NEW Root of switch %d is %d\n NEW Distance of switch %d is %d\n NEW Parent of switch %d is %d\n", sstate->physid, sstate->rootid, sstate->physid, sstate->distance, sstate->physid, sstate->parent);
+
 	}
-  
+	else if(pbuff->type == 1 && pbuff->payload[3] == sstate->physid)
+		{
+			for(i = 0; i < 9; i++)
+			{
+				if(sstate->child[i] == pbuff->srcaddr)
+					childflag = 1;
+			}
+			
+			if(childflag == 0)
+			{
+		sstate->child[sstate->numchild] = pbuff->srcaddr;		
+		printf("NEW Child[%d] of switch %d is %d\n",sstate->numchild, sstate->physid, sstate->child[sstate->numchild]);
+		sstate->numchild++;		
+			}	
+		}  
 //  	   deQueue(sstate->recvPQ); //Pop top after sending
-  	   return;
-	}
+		return;
+	
 	
 }
 
