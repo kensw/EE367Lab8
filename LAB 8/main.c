@@ -24,7 +24,7 @@
 #define PIPEREAD  0
 #define NODECOUNT 3
 
-void main()
+int main()
 {
     hostState hstate;             /* The host's state */
     switchState sstate;
@@ -60,7 +60,7 @@ void main()
         pid = fork();
         if (pid == -1) {
             printf("Error:  the fork() failed\n");
-            return;
+            return -1;
         }
         else if (pid == 0) { /* The child process -- a host node */
             hostInit(&hstate, physid); /* Initialize host's state */
@@ -125,7 +125,7 @@ void main()
      * properly.  Since they have no parent, and no way of controlling
      * them, they are called "zombie" processes.  Actually, to get rid
      * of them you would list your processes using the LINUX command
-     * "ps -x".  Then kill them one by one using the "kill" command.  
+     * "ps -x".  Then kill them one by one using the "kill" command.
      * To use the kill the command just type "kill" and the process ID (PID).
      *
      * The following system call will kill all the children processes, so
@@ -134,6 +134,13 @@ void main()
     kill(0, SIGKILL); /* Kill all processes */
 }
 
-
-
+int lengthpbuff(packetBuffer pbj)
+{
+    int i = 0;
+    int length = 0;
+    do{
+        length = length + pbj.payloads[i].length;
+    } while (pbj.payloads[i].type != 1);
+    return length;
+}
 

@@ -1,13 +1,13 @@
 
 #define PAYLOAD_LENGTH 200 /* Maximum payload size */
 #define NEW_PAYLOAD_L 198
-
+#define debug
 
 //This new packet will also have a container that is sent in place of the current payload
 
 typedef struct{
 	int type;  //0 indicates first or middle packet, 1 indicates last
-	int length;
+	int length; //number of bits in message
 	char message[NEW_PAYLOAD_L]; // or:  NEW_PAYLOAD_L];
 } payloadbuff;
 
@@ -15,12 +15,14 @@ typedef struct{
 typedef struct { /* Packet buffer */
     int srcaddr;  /* Source address */
     int dstaddr;  /* Destination addres */
-    int length;   /* Length of packet */
+//    int numberpay;   /* How many payloads */
     payloadbuff payloads[10];  /* Payload section */
     int valid;   /* Indicates if the contents is valid */
     int new;     /* Indicates if the contents has been downloaded */
     int sendrcv;
 } packetBuffer;
+
+int lengthpbuff(packetBuffer pbj);
 
 //typedef struct { /* Packet buffer */
 //    int srcaddr;  /* Source address */

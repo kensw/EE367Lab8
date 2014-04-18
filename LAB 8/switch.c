@@ -46,7 +46,7 @@
 #define LINK_OFFSET 1
 #define NOT_FOUND -1
 
-void debug(int stage)
+void debug1(int stage)
 {
     FILE * file = fopen("DEBUGFILE", "a");
     if(!file) {
@@ -200,7 +200,7 @@ void switchMain(switchState * sstate)
     sstate->ftable = NULL;
     while(1){
         packetBuffer pb;
-        scanAllLinks(sstate, &pb); 
+        scanAllLinks(sstate, &pb);
         if(!isEmpty(sstate->recvPQ)) {
             switchSendPacketBuff(sstate);
         }

@@ -340,7 +340,7 @@ void hostUploadPacket(hostState * hstate, char fname[], char replymsg[])
     /* Fill in send packet buffer */
     
     hstate->sendPacketBuff.valid=1;
-    hstate->sendPacketBuff.length=length;
+//    hstate->sendPacketBuff.length=length;
     
      //initialize payloadbuff
     int x;
@@ -359,6 +359,7 @@ void hostUploadPacket(hostState * hstate, char fname[], char replymsg[])
         
         if (x>NEW_PAYLOAD_L)
         {
+            hstate->sendPacketBuff.payloads[y].length=x;
             x=0;
             y++;
         }
@@ -423,7 +424,7 @@ void hostDownloadPacket(hostState * hstate, char fname[], char replymsg[])
     int x;
     int y;
     int i;
-    for (i=x=y=0; i<hstate->rcvPacketBuff.length; i++) { /* Store tempbuff in payloads of payload buffer of packet buffer */
+    for (i=x=y=0; lengthpbuff(hstate->rcvPacketBuff); i++) { /* Store tempbuff in payloads of payload buffer of packet buffer */
         tempbuff[i]=hstate->rcvPacketBuff.payloads[y].message[x];
         x++;
         
@@ -436,7 +437,7 @@ void hostDownloadPacket(hostState * hstate, char fname[], char replymsg[])
     
     /* Put tempbuff into file */
     if (hstate->rcvPacketBuff.new == 1) {
-        fwrite(tempbuff,1,hstate->rcvPacketBuff.length,fp);
+        fwrite(tempbuff,1,lengthpbuff(hstate->rcvPacketBuff),fp);
         hstate->rcvPacketBuff.new=0;
     }
     
