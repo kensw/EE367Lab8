@@ -261,12 +261,15 @@ void switchMain(switchState * sstate)
 	packetBuffer pb;
      scanAllLinks(sstate, &pb); 
     	
-	if(!isEmpty(sstate->recvPQ)) {		  
+	if(!isEmpty(sstate->recvPQ) && count != 0) {		  
        switchSendPacketBuff(sstate);
 	}   
-	//else if(count == 0) 
-	//switchSendAllLocal(sstate);
+	else if(count == 0) 
+	{	switchSendAllLocal(sstate);
+		count = 10;
+	}
 	
+	count--;
 	 usleep(100000);
    }
 
