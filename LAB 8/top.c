@@ -5,6 +5,7 @@
 
 #define STAR 0
 #define TREE 1
+#define ARB 2
 #define FAIL -1
 #define SUCCESS 1
 #define FILENAMEMAX 100
@@ -18,6 +19,7 @@
 
 char tree_cmp[] = "tree";
 char star_cmp[] = "star";
+char arb_cmp[] = "arb";
 
 void initTopo(Topo *topology)
 {
@@ -64,6 +66,58 @@ void initTreeData(char *file, Topo *top)
          case 0: break;
          case 1: 
                  top->numhosts = val;
+                 printf("Number of hosts: %d \n", top->numhosts);
+                 break; 
+         case 2:
+                 top->numswitch = val;
+                 printf("Number of switches: %d \n", top->numswitch);
+                 break; 
+         }
+      } else {
+         printf("Something went wrong reading first three lines \n");
+         return;
+      }
+   }
+   
+   int count = 0; 
+   while((linesize = getline(&linebuff, &length, data)) != -1){
+      removeNewLine(linebuff);
+      int num = atoi(linebuff);
+      top->link[count] = num;
+      count++; // Increment Counter
+   }
+   int num_link = count / 3;
+   top->numlinks = num_link;
+   printf("Number of links: %d \n", num_link);
+   fclose(data);
+
+}
+
+void initArbData(char *file, Topo *top)
+{ 
+   char *linebuff = NULL; 
+   size_t length = 0;
+   ssize_t linesize;
+   
+   printf("[ARBITRARY] Topology detected.\n");
+
+   FILE *data = fopen(file,"r");
+   if(!data){
+      printf("Error: Something wrong occurred!");
+      return;
+   }
+   
+   /* First three lines are NOT Link Data*/
+   int index;
+   for(index = 0; index < 3; index++) {
+      linesize = getline(&linebuff, &length, data);
+      removeNewLine(linebuff);
+      if(linesize != -1){
+         int val = atoi(linebuff);
+         switch(index){
+         case 0: break;
+         case 1: 
+                 top->numhosts = val;
                  printf("Number of hosts: %d \n", val);
                  break; 
          case 2:
@@ -90,6 +144,7 @@ void initTreeData(char *file, Topo *top)
    fclose(data);
 
 }
+
 
 
 void initStarData(char *file, Topo *top)
@@ -173,7 +228,12 @@ int initializeTop(Topo *topology)
             fclose(file);
             initStarData(filename, topology);
             return SUCCESS;
-         } else {
+         } else if (strcmp(linebuff, arb_cmp) == 0) {
+            fclose(file);
+            initArbData(filename, topology);
+            return SUCCESS;
+         }
+	     else {
             printf("Incorrect syntax detected..stopping.\n");
             fclose(file);
             return FAIL;

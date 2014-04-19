@@ -12,8 +12,8 @@ typedef struct {
    int rootid; /* Root ID */
    int distance; /* Distance to root */
    int parent; /* The parent to the switch */
-   int child[10];
-   int numchild;
+   int child[10]; // Children to the switch
+   int numchild;  // Number of children
    struct FWTable * ftable; //Container of forwarding data
    struct PacketQueue * recvPQ; //Container of packets
    struct switchLinks * sLinks; //Container of all connections   

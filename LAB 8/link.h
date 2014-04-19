@@ -25,6 +25,7 @@ typedef struct {
 
 typedef struct {  /* Has all the information to implement a link */
    int linkID;             /* ID for the link */
+   int linkSwitch;		  /* set to 1 if this link connects to a switch */
    enum LinkType linkType; /* The type of link */
    UniPipeInfo uniPipeInfo; /* If the link is a pipe, this is the information */
 } LinkInfo;

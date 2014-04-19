@@ -186,10 +186,51 @@ void switchSendAll(switchState * sstate, int src, packetBuffer * recv)
 {
    //Head of link container
    switchLinks * ptr = sstate->sLinks;
+   int i;
+   int flag = 0;
+   int destaddr, sourcelink;
+   packetBuffer * temp = front(sstate->recvPQ);
+   destaddr = temp->dstaddr;
+   sourcelink = linksourcefront(sstate->recvPQ);
+   
+ //  printf("switch %d sendAll, sourcelink: %d, destaddr: %d\n", sstate->physid, sourcelink, destaddr);
+ 
+ /*  
+   // Check if 
+   for(i = 0 ; i < sstate->numchild+1 ; i++)   
+   {
+	   if(destaddr == sstate->child[i] || destaddr == sstate->parent)	   
+   }
+   */
    while(ptr != NULL) {
       if(ptr->linkin.linkID != src) {
-         linkSend(&(ptr->linkout), recv);
-      }
+	
+		 // Check if linkout is a parent or child
+	      for(i = 0 ; i < sstate->numchild+1 ; i++)   
+	      {
+	   	  	if(ptr->linkout.uniPipeInfo.physIdDst == sstate->child[i] || ptr->linkout.uniPipeInfo.physIdDst == sstate->parent)	   
+			flag = 1;
+			
+			printf("ptr->linkout->UniPipeInfo->physIdDst = %d,  ptr->linkout.linkID = %d, sstate->child[i] = %d \n",ptr->linkout.uniPipeInfo.physIdDst, ptr->linkout.linkID, sstate->child[i]);
+		 }
+	 
+		 printf("switch %d ptr->linkout.ID: %d \n", sstate->physid, ptr->linkout.linkID);
+
+
+		 if(ptr->linkout.linkSwitch == 0)
+		 {
+			 printf("sending to host %d\n", ptr->linkout.uniPipeInfo.physIdDst);
+			 linkSend(&(ptr->linkout), recv);
+	 	 }
+		 else if(flag == 1)
+		 {
+			printf("FLAG == 1, switch %d sending to ptr->linkout.linkID : %d\n", sstate->physid, ptr->linkout.linkID);
+         	  	linkSend(&(ptr->linkout), recv);
+    		 	flag = 0;
+		 }
+		 
+
+	 }
       ptr = ptr->next;
    }
    deQueue(sstate->recvPQ); //Pop top after sending
@@ -214,6 +255,7 @@ void switchSendAllLocal(switchState * sstate)
    //Head of link container
    switchLinks * ptr = sstate->sLinks;
    while(ptr != NULL) {
+	 //  printf("switch %d SendAllLocal ptr->linkout.linkId = %d\n", sstate->physid, ptr->linkout.linkID);
          linkSend(&(ptr->linkout), &netpacket);
       ptr = ptr->next;
    }
@@ -227,6 +269,8 @@ void switchSendPacketBuff(switchState * sstate)
    packetBuffer * temp = front(sstate->recvPQ);
    destaddr = temp->dstaddr;
    sourcelink = linksourcefront(sstate->recvPQ);
+   
+   //printf("switch %d SendPacketBuff, sourcelink: %d, destaddr: %d\n", sstate->physid, sourcelink, destaddr);
    
    //Forwarding Table Entry not found
    int dest_link = linkDestSearch(&(sstate->ftable), destaddr);
@@ -270,6 +314,13 @@ void switchMain(switchState * sstate)
    sstate->ftable = NULL;
    
    int count = 10;
+  
+   switchLinks * ptr = sstate->sLinks;
+   while(ptr != NULL) {
+	    printf("switch %d SendAllLocal ptr->linkout.linkId = %d\n", sstate->physid, ptr->linkout.linkID);
+      ptr = ptr->next;
+   }
+  
   
    while(1){
 	packetBuffer pb;
