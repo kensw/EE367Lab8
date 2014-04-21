@@ -124,28 +124,28 @@ int linkReceive(LinkInfo * link, packetBuffer * pbuff)
                 findWord(word, buffer, 1); /* Destination address */
 #ifdef debug
                 printf("\ndestadd:%s", word);
-#endif debug
+#endif
                 pbuff->dstaddr = ascii2Int(word);
                 
                 
                 findWord(word, buffer, 2); /* Source address */
 #ifdef debug
                 printf("\nsouradd:%s", word);
-#endif debug
+#endif
                 pbuff->srcaddr = ascii2Int(word);
                 
                 
                 findWord(word, buffer, 3); /* length of payload */
 #ifdef debug
                 printf("\nlen:%s", word);
-#endif debug
+#endif
                 pbuff->payloads[x].length = ascii2Int(word);
                 
                 
                 findWord(word, buffer, 4); /* Payload */
 #ifdef debug
                 printf("\npay:%s\n", word);
-#endif debug
+#endif
                 
                 /*
                  * We will transform the payload so that

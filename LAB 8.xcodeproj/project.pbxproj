@@ -21,6 +21,7 @@
 		937078E618F79CD400C83002 /* utilities.c in Sources */ = {isa = PBXBuildFile; fileRef = 937078D718F79CD400C83002 /* utilities.c */; };
 		937078E718F7AD5C00C83002 /* man.c in Sources */ = {isa = PBXBuildFile; fileRef = 937078C118F79CD400C83002 /* man.c */; };
 		937078EB18F7AF3E00C83002 /* fwtable.c in Sources */ = {isa = PBXBuildFile; fileRef = 937078EA18F7AF3E00C83002 /* fwtable.c */; };
+		93AE477A1904B9F300CA642B /* debug.c in Sources */ = {isa = PBXBuildFile; fileRef = 93AE47791904B9F300CA642B /* debug.c */; };
 		93DD082718FB7B9800F7E165 /* sleep.c in Sources */ = {isa = PBXBuildFile; fileRef = 93DD082618FB7B9800F7E165 /* sleep.c */; };
 /* End PBXBuildFile section */
 
@@ -75,6 +76,8 @@
 		937078D818F79CD400C83002 /* utilities.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = utilities.h; sourceTree = "<group>"; };
 		937078E818F7AD8000C83002 /* man2.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = man2.c; sourceTree = "<group>"; };
 		937078EA18F7AF3E00C83002 /* fwtable.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = fwtable.c; sourceTree = "<group>"; };
+		93AE47791904B9F300CA642B /* debug.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = debug.c; sourceTree = "<group>"; };
+		93AE477B1904BACA00CA642B /* debug.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = debug.h; sourceTree = "<group>"; };
 		93DD082618FB7B9800F7E165 /* sleep.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = sleep.c; sourceTree = "<group>"; };
 		93DD082818FB7BAD00F7E165 /* sleep.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = sleep.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -115,6 +118,8 @@
 				937078E818F7AD8000C83002 /* man2.c */,
 				937078B718F79CD400C83002 /* fwtable.h */,
 				937078B818F79CD400C83002 /* host.c */,
+				93AE47791904B9F300CA642B /* debug.c */,
+				93AE477B1904BACA00CA642B /* debug.h */,
 				937078B918F79CD400C83002 /* host.h */,
 				937078BA18F79CD400C83002 /* LAB_8.1 */,
 				937078BB18F79CD400C83002 /* line */,
@@ -208,6 +213,7 @@
 				93DD082718FB7B9800F7E165 /* sleep.c in Sources */,
 				937078E618F79CD400C83002 /* utilities.c in Sources */,
 				937078E418F79CD400C83002 /* testlink.c in Sources */,
+				93AE477A1904B9F300CA642B /* debug.c in Sources */,
 				937078E518F79CD400C83002 /* top.c in Sources */,
 				937078EB18F7AF3E00C83002 /* fwtable.c in Sources */,
 				937078DD18F79CD400C83002 /* makefile in Sources */,

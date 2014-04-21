@@ -47,13 +47,23 @@ int main()
      */
     manLinkArray.numlinks = top.numhosts;
     netCreateConnections(& manLinkArray);
+#ifdef debug
+    printf("Created Nonblocking pipes\n");
+#endif
     
     /* Create links between nodes but not setting their end nodes */
     linkArray.numlinks = top.numlinks;
     netCreateLinks(& linkArray);
+#ifdef debug
+    printf("Created links between nodes\n");
+#endif
     
     /* Set the end nodes of the links */
     netSetNetworkTopology(&top, & linkArray);
+#ifdef debug
+    printf("Set the end nodes of the links\n");
+#endif
+    
     
     /* Create nodes and spawn their own processes, one process per node */
     for (physid = 0; physid < top.numhosts; physid++) {
@@ -88,6 +98,9 @@ int main()
             hostMain(&hstate);
         }
     }
+#ifdef debug
+    printf("Created nodes and spawned their own processes\n");
+#endif
     
     int sw_end_addr = top.numhosts + top.numswitch;
     for(physid = top.numhosts; physid < sw_end_addr; physid++){

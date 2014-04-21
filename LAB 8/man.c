@@ -78,7 +78,7 @@ void manWaitForReply(managerLink * manLink, int cmd);
 int  manReplyReceive(managerLink * manLink, char reply[]);
 void manDisplayReplyMsg(char replymsg[]);
 
-/*
+/*6
  * Functions
  */
 
@@ -447,6 +447,8 @@ int manChangeHost(int maxHosts)
  *****************************/
 void manMain(manLinkArrayType * manLinkArray)
 {
+    
+    
     int currhost;      /* The current host the manager is connected to */
     char cmd;          /* Command entered by user */
     int k;
