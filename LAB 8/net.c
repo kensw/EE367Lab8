@@ -200,7 +200,7 @@ void netCloseLinks(linkArrayType * linkArray)
 {
     int i;
     
-    for (i=0; i<linkArray->numlinks; i++) 
+    for (i=0; i<linkArray->numlinks; i++)
         linkClear(&(linkArray->link[i]));
 }
 

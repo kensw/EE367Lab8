@@ -1,4 +1,5 @@
 #include "man.h"
+
 void manDisplayHosts(int currhost, int maxHosts)
 {
     int i;
@@ -32,6 +33,7 @@ int manChangeHost(int maxHosts)
  *****************************/
 void manMain(manLinkArrayType * manLinkArray)
 {
+    
     int currhost;      /* The current host the manager is connected to */
     char cmd;          /* Command entered by user */
     int k;
@@ -42,7 +44,13 @@ void manMain(manLinkArrayType * manLinkArray)
         cmd = manGetUserCommand(currhost);
         if (cmd == 'q') return;
         else if (cmd == 'd') {
+#ifdef debug
+            printf("command d\n");
+#endif
             manGetHostState(&(manLinkArray->link[currhost]));
+#ifdef debug
+            printf("gethoststate d\n");
+#endif
             manWaitForReply(&(manLinkArray->link[currhost]), cmd);
         }
         else if (cmd == 's') {

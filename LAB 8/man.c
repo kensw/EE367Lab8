@@ -18,6 +18,9 @@
 #include "utilities.h"
 #include "link.h"
 #include "man.h"
+#ifdef debug
+#include "debug.h"
+#endif
 
 #define NAME_LENGTH 100
 #define EMPTY_ADDR  10000  /* Indicates that the empty address */
@@ -26,6 +29,7 @@
 #define PIPEWRITE 1
 #define PIPEREAD  0
 #define TENMILLISEC 10000
+
 
 /* Get a command from the user */
 char manGetUserCommand(int chost);
@@ -365,7 +369,7 @@ void manSetNetAddr(managerLink * manLink)
 void manGetHostState(managerLink * manLink)
 {
     char command[1000];
-    
+    debugmessage("hoststate start\n");
     command[0] = '\0';                         /* Empty command string */
     appendWithSpace(command, "GetHostState");  /* Create the command */
     manCommandSend(manLink, command);          /* Send the command */
@@ -454,16 +458,20 @@ void manMain(manLinkArrayType * manLinkArray)
     int k;
     
     currhost = 0;      /* Manager is initially connected to host 0 */
-    
     while(1) {
         /* Get a command from the user */
+
         cmd = manGetUserCommand(currhost);
-        
+
         /* Execute the command */
         if (cmd == 'q') return;
         else if (cmd == 'd') {
+            printf("blah\n");
             manGetHostState(&(manLinkArray->link[currhost]));
+            printf("blah\n");
             manWaitForReply(&(manLinkArray->link[currhost]), cmd);
+            printf("blah\n");
+
         }
         else if (cmd == 's') {
             manSetNetAddr(&(manLinkArray->link[currhost]));
