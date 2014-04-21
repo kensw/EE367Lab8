@@ -17,6 +17,10 @@
 #include "switchlink.h"
 #include "switch.h"
 
+#ifdef debug
+#include "debug.h"
+#endif
+
 #define EMPTY_ADDR  0xffff  /* Indicates that the empty address */
 /* It also indicates that the broadcast address */
 #define MAXBUFFER 1000
@@ -35,6 +39,10 @@ int main()
     initializeTop(&top);
     /* Intialie Switch Links to NULL */
     sstate.sLinks = NULL;
+    
+#ifdef debug
+    debuginit();
+#endif
     
     pid_t pid;  /* Process id */
     int physid; /* Physical ID of host */

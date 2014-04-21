@@ -7,14 +7,24 @@
 //
 
 #include <stdio.h>
+#include "utilities.h"
+#include <time.h>
 
 void debuginit()
 {
+    time_t rawtime;
+    struct tm * timeinfo;
+    
+    time ( &rawtime );
+    timeinfo = localtime ( &rawtime );
+    
     FILE * pFile;
     pFile = fopen ("debug.txt","a");
     if (pFile!=NULL)
     {
-        fputs ("BEGIN LOG\n",pFile);
+        fputs ("BEGIN LOG ON ",pFile);
+        fputs (asctime (timeinfo),pFile);
+        fputs ("\n",pFile);
         fclose (pFile);
     }
 }
