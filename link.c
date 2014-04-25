@@ -58,6 +58,10 @@ int linkClear(LinkInfo * link)
         close(link->uniPipeInfo.fd[0]);
         close(link->uniPipeInfo.fd[1]);
     }
+   //new stuff
+   else if (link-LinkType == SOCKET) {
+        //socket stuff
+    }
     return -1;
 }
 
@@ -79,6 +83,9 @@ int linkCreate(LinkInfo * link)
         }
         else printf("LinkCreate:  unknown unipipe type\n");
         return 0;
+    }
+    else if (link->linkType == SOCKET) {
+	//socket stuff
     }
     else {
         printf("Link not created:  invalid type\n");
@@ -145,7 +152,12 @@ int linkReceive(LinkInfo * link, packetBuffer * pbuff)
             pbuff->payload[k] = '\0';
             pbuff->valid=1;
             pbuff->new=1;
-        } else {
+        } 
+	 else if (link->linkType == SOCKET) {
+		//socket stuff
+	}
+	 else {
+
             /* end of if */
             /* Not a packet */
             pbuff->valid=0;
@@ -230,7 +242,10 @@ int linkSend(LinkInfo * link, packetBuffer * pbuff)
     if (link->linkType==UNIPIPE) {
         write(link->uniPipeInfo.fd[PIPEWRITE],sendbuff,strlen(sendbuff));
     }
-    
+   if (link->linkType==SOCKET) {
+	//socket stuff
+    }
+ 
     /* Used for DEBUG -- trace packets being sent */
     printf("Link %d transmitted\n",link->linkID);
     return -1;
