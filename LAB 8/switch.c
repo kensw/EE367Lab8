@@ -123,7 +123,7 @@ void switchRecvPacketBuff(switchState * sstate, int in_id, packetBuffer * pbuff)
 	int i;
 	int childflag = 0;
 	if(pbuff->type != 1)
-	printf("RecvPacketBuff pbuff->type = %d\n", pbuff->type);
+		printf("RecvPacketBuff pbuff->type = %d\n", pbuff->type);
 	
 
 	if(pbuff->type == 0)
@@ -186,8 +186,9 @@ void switchSendAll(switchState * sstate, int src, packetBuffer * recv)
 {
    //Head of link container
    switchLinks * ptr = sstate->sLinks;
-   int i;
+   int i =0;
    int flag = 0;
+   int exitflag = 0;
    int destaddr, sourcelink;
    packetBuffer * temp = front(sstate->recvPQ);
    destaddr = temp->dstaddr;
@@ -206,31 +207,31 @@ void switchSendAll(switchState * sstate, int src, packetBuffer * recv)
       if(ptr->linkin.linkID != src) {
 	
 		 // Check if linkout is a parent or child
-	      for(i = 0 ; i < sstate->numchild+1 ; i++)   
-	      {
-	   	  	if(ptr->linkout.uniPipeInfo.physIdDst == sstate->child[i] || ptr->linkout.uniPipeInfo.physIdDst == sstate->parent)	   
-			flag = 1;
-			
-			printf("ptr->linkout->UniPipeInfo->physIdDst = %d,  ptr->linkout.linkID = %d, sstate->child[i] = %d \n",ptr->linkout.uniPipeInfo.physIdDst, ptr->linkout.linkID, sstate->child[i]);
-		 }
-	 
+		   for(i = 0 ; i < sstate->numchild+1 ; i++)   
+		   {
+ 	   	  	if(ptr->linkout.uniPipeInfo.physIdDst == sstate->child[i])	   
+			{	linkSend(&(ptr->linkout), recv);
+				exitflag = 1;
+				break;
+			}
+	//		printf("ptr->linkout->UniPipeInfo->physIdDst = %d,  ptr->linkout.linkID = %d, sstate->child[i] = %d \n",ptr->linkout.uniPipeInfo.physIdDst, ptr->linkout.linkID, sstate->child[i]);
+			}
+			/*
 		 printf("switch %d ptr->linkout.ID: %d \n", sstate->physid, ptr->linkout.linkID);
 
-
-		 if(ptr->linkout.linkSwitch == 0)
+		 if(ptr->linkout.linkHost == 0)
 		 {
 			 printf("sending to host %d\n", ptr->linkout.uniPipeInfo.physIdDst);
 			 linkSend(&(ptr->linkout), recv);
 	 	 }
-		 else if(flag == 1)
-		 {
-			printf("FLAG == 1, switch %d sending to ptr->linkout.linkID : %d\n", sstate->physid, ptr->linkout.linkID);
-         	  	linkSend(&(ptr->linkout), recv);
-    		 	flag = 0;
-		 }
-		 
+		 */
 
+		 if(ptr->linkout.uniPipeInfo.physIdDst == sstate->parent || ptr->isSwitchLink == 1)
+			 {linkSend(&(ptr->linkout), recv);}
+
+	 		
 	 }
+	 exitflag = 0;
       ptr = ptr->next;
    }
    deQueue(sstate->recvPQ); //Pop top after sending
@@ -310,17 +311,18 @@ void switchSetLinkHead(switchState * sstate, switchLinks * head)
 
 void switchMain(switchState * sstate)
 {		
+	
    sstate->recvPQ = createQueue();
    sstate->ftable = NULL;
    
    int count = 10;
   
+
    switchLinks * ptr = sstate->sLinks;
    while(ptr != NULL) {
 	    printf("switch %d SendAllLocal ptr->linkout.linkId = %d\n", sstate->physid, ptr->linkout.linkID);
       ptr = ptr->next;
    }
-  
   
    while(1){
 	packetBuffer pb;

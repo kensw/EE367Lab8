@@ -5,6 +5,7 @@
 typedef struct switchLinks {
    LinkInfo linkin; //Incoming Link (Receive Data)
    LinkInfo linkout; //Outgoing Link (Send Data)
+   int isSwitchLink;
    struct switchLinks * next;
 } switchLinks;
 
