@@ -5,6 +5,7 @@
 
 enum LinkType {UNIPIPE, SOCKET}; /* UNIPIPE = unidirectional pipe
                           * We can add more types later
+                          * SOCKET = socket links
                           */
 
 enum UniPipeType {BLOCKING, NONBLOCKING};
@@ -27,6 +28,7 @@ typedef struct {  /* Has all the information to implement a link */
    int linkID;             /* ID for the link */
    enum LinkType linkType; /* The type of link */
    UniPipeInfo uniPipeInfo; /* If the link is a pipe, this is the information */
+   int port;		// port number
 } LinkInfo;
 
 
@@ -35,11 +37,11 @@ typedef struct {
    LinkInfo link[NUMLINKS];
 } linkArrayType;
 
-
+/*
 typedef struct {
    int port;
 } Socket;
-
+*/
 
 /* Transmit the packet in pbuff on the link */
 int linkSend(LinkInfo * link, packetBuffer * pbuff);
