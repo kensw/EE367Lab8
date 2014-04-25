@@ -140,14 +140,24 @@ void manWaitForReply(managerLink * manLink, int cmd)
     char reply[1000];
     char word[1000];
     int length;
+#ifdef debug
+    char deb[100];
+#endif
     
+    
+    debugmessage("Start manWaitForReply\n");
     do {
+#ifdef debug
+        debugmessage("Looping, length: ");
+        int2Ascii(deb, length);
+        debugmessage(deb);
+#endif
         usleep(TENMILLISEC); /* Go to sleep for 10 milliseconds */
         length = manReplyReceive(manLink, reply);
         findWord(word, reply, 1);
         if (strcmp(word, "DISPLAY")==0) manDisplayReplyMsg(reply);
         else if (strcmp(word, "GetHostStateAck") == 0) manDisplayHostState(reply);
-    } while(length <= 1);
+    } while(length <= 0);
 }
 
 /* This displays the message after the first word on the user's console */
@@ -372,7 +382,9 @@ void manGetHostState(managerLink * manLink)
     debugmessage("hoststate start\n");
     command[0] = '\0';                         /* Empty command string */
     appendWithSpace(command, "GetHostState");  /* Create the command */
+    debugmessage("append with space done\n");
     manCommandSend(manLink, command);          /* Send the command */
+    debugmessage("mancommandsend done\n");
 }
 
 /*
