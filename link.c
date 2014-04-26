@@ -243,7 +243,7 @@ int linkSend(LinkInfo * link, packetBuffer * pbuff)
         write(link->uniPipeInfo.fd[PIPEWRITE],sendbuff,strlen(sendbuff));
     }
    if (link->linkType==SOCKET) {
-	//socket stuff
+	write(link->uniPipeInfo.fd[PIPEWRITE],sendbuff,strlen(sendbuff));
     }
  
     /* Used for DEBUG -- trace packets being sent */
