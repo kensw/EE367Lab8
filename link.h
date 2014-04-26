@@ -4,7 +4,6 @@
 #define NUMLINKS 16
 
 enum LinkType {UNIPIPE, SOCKET}; /* UNIPIPE = unidirectional pipe
-                          * We can add more types later
                           * SOCKET = socket links
                           */
 
@@ -23,6 +22,7 @@ typedef struct {
    int         physIdSrc;
    int	       physIdDst;
 } UniPipeInfo;
+
 
 typedef struct {  /* Has all the information to implement a link */
    int linkID;             /* ID for the link */
