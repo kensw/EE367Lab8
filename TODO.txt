@@ -1,0 +1,46 @@
+TODO:
+grep example:
+
+grep -r "ItemYouAreSearcingfor"
+
+Questions
+-What is the valid bit for in the forwarding table? 
+
+
+Improvement #1
+Currently inplmenting switch, need to rewrite net.c and main.c to be able to test switch.
+
+Associating Source Address to LINK = head->linkin.uniPipeInfo.physIDSrc;
+
+
+------------
+Check for Data using linkReceive. Parameters (ingoing link, packetBuffer)
+Function modifies packetBuffer and sets data based on whether it is valid or not-----------
+
+-----------
+Send Data using linkSend. Parameters are (outgoing link, packetBuffer)
+-----------
+
+
+Improvement #2
+packetBuffer is found in main.h <--- change this to mark for end of file or not
+hostState in host.h has a recPacketBuffer and a sendPacketBuffer
+
+
+
+
+Improvement #3
+Currently implementing socket code in link.c, modified code to test
+for UNIPIPE(PIPE) or SOCKET(SOCKET). 
+
+link.h was modified to have SOCKET in enum portion of code. A
+structure might need to be implemented for SOCKET like UniPipeInfo,
+maybe struc called SocPipeInfo?
+
+Does struc LinkInfo in link.h need to be improved on?
+
+net.c has some use of linkType in a FOR loop, will need to figure out
+how to implement the creation of the SOCKET links. 
+
+
+
