@@ -29,6 +29,7 @@
 #include <unistd.h>
 #include <fcntl.h>
 
+#include "debug.h"
 #include "main.h"
 #include "utilities.h"
 #include "link.h"
@@ -157,8 +158,18 @@ void hostMain(hostState * hstate)
         /* Check if there is a command message from the manager */
         int length; /* Size of string in pipe */
         length = hostCommandReceive(&(hstate->manLink),buffer);
+#ifdef debug
+        debugmessage("hostcommandrec ");
+        debugmessage(buffer);
+        debugmessage(": ");
+        debugmessageint(length);
+        debugmessage("\n");
+#endif
         
         if (length > 1) { /* Execute the manager's command */
+#ifdef debug
+            debugmessage("hostcommandrecexecute!\n");
+#endif
             findWord(word, buffer, 1);
             if (strcmp(word, "SetNetAddr")==0) {
                 findWord(word, buffer, 2); /* Find net address */
@@ -236,6 +247,11 @@ int hostCommandReceive(managerLink * manLink, char command[])
 {
     int n;
     n = read(manLink->toHost[PIPEREAD],command,250);
+#ifdef debug
+    debugintmessageint(manLink->toHost[PIPEREAD],fork());
+    debugintmessageint(manLink->toHost[PIPEREAD],fork());
+    debugintmessageint(manLink->toHost[PIPEREAD],fork());
+#endif
     command[n] = '\0';
     return n+1;
 }

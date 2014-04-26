@@ -11,5 +11,9 @@
 
 void debuginit();
 void debugmessage(char * message);
+void debugmessageint(int n);
+void debugintmessageint(int n,int file);
+void debugintmessage(char * message,int file);
+
 
 #endif

@@ -88,14 +88,17 @@ void int2Ascii(char c[], int value)
     char reverse[MAXBUFFER]; /* String to store digits in the reverse order */
     int i, j, k;
     int remainder;
-    
+    int neg=0;
+    k = 0;
+
     if (value < 0) {
-        c[0] = '\0';  /* return empty character string */
-        printf("Error:  negative value passed to int2Ascii\n");
-        return;
+//        c[0] = '\0';  /* return empty character string */
+//        printf("Error:  negative value passed to int2Ascii\n");
+//        return;
+        neg = 1;
+        value=value*-1;
     }
     
-    k = 0;
     remainder = value;
     
     do { /* Compute last digit to the first */
@@ -106,6 +109,11 @@ void int2Ascii(char c[], int value)
     
     /* copy the reverse of reverse[] into c[] */
     for (i=0; i<k; i++) c[i] = reverse[k-i-1];
+    if (neg==1) {
+        c[k] = '-'; /* terminate c[] */
+        c[k+1] = '\0'; /* terminate c[] */
+    }
+    else
     c[k] = '\0'; /* terminate c[] */
 }
 

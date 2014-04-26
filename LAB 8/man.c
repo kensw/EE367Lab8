@@ -94,8 +94,19 @@ int manReplyReceive(managerLink * manLink, char reply[])
 {
     int n;
     
+//#ifdef debug
+//    char deb[20];
+//    debugmessage("\nManRepRec: ");
+//#endif
     n = read(manLink->fromHost[PIPEREAD],reply,250);
     reply[n] = '\0';
+//#ifdef debug
+//    int2Ascii(deb, n);
+//    debugmessage(deb);
+//    debugmessage(" ");
+//    debugmessage(reply);
+//    debugmessage(" ");
+//#endif
     return n+1;
 }
 
@@ -140,24 +151,29 @@ void manWaitForReply(managerLink * manLink, int cmd)
     char reply[1000];
     char word[1000];
     int length;
-#ifdef debug
-    char deb[100];
-#endif
-    
-    
-    debugmessage("Start manWaitForReply\n");
+//#ifdef mandebug
+//    char deb[100];
+//#endif
+//    
+//#ifdef mandebug
+//    debugmessage("Start manWaitForReply\n");
+//#endif
+
     do {
-#ifdef debug
-        debugmessage("Looping, length: ");
-        int2Ascii(deb, length);
-        debugmessage(deb);
-#endif
+//#ifdef mandebug
+//        debugmessage("Looping, length: ");
+//        int2Ascii(deb, length);
+//        debugmessage(deb);
+//#endif
         usleep(TENMILLISEC); /* Go to sleep for 10 milliseconds */
         length = manReplyReceive(manLink, reply);
         findWord(word, reply, 1);
         if (strcmp(word, "DISPLAY")==0) manDisplayReplyMsg(reply);
         else if (strcmp(word, "GetHostStateAck") == 0) manDisplayHostState(reply);
-    } while(length <= 0);
+    } while(length <= 1);
+//#ifdef debugman
+//    debugmessage("End manWaitForReply\n");
+//#endif
 }
 
 /* This displays the message after the first word on the user's console */
@@ -472,9 +488,9 @@ void manMain(manLinkArrayType * manLinkArray)
     currhost = 0;      /* Manager is initially connected to host 0 */
     while(1) {
         /* Get a command from the user */
-
+        
         cmd = manGetUserCommand(currhost);
-
+        
         /* Execute the command */
         if (cmd == 'q') return;
         else if (cmd == 'd') {
@@ -483,7 +499,7 @@ void manMain(manLinkArrayType * manLinkArray)
             printf("blah\n");
             manWaitForReply(&(manLinkArray->link[currhost]), cmd);
             printf("blah\n");
-
+            
         }
         else if (cmd == 's') {
             manSetNetAddr(&(manLinkArray->link[currhost]));

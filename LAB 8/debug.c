@@ -7,8 +7,11 @@
 //
 
 #include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 #include "utilities.h"
 #include <time.h>
+
 
 void debuginit()
 {
@@ -22,9 +25,60 @@ void debuginit()
     pFile = fopen ("debug.txt","a");
     if (pFile!=NULL)
     {
+        fputs ("\n\n======================================================\n",pFile);
         fputs ("BEGIN LOG ON ",pFile);
         fputs (asctime (timeinfo),pFile);
         fputs ("\n",pFile);
+        fclose (pFile);
+    }
+}
+
+void debugmessageint(int n)
+{
+    char message[500];
+    FILE * pFile;
+    pFile = fopen ("debug.txt","a");
+    if (pFile!=NULL)
+    {
+        int2Ascii(message, n);
+        fputs (message,pFile);
+        fclose (pFile);
+    }
+}
+
+void debugintmessageint(int n,int file)
+{
+    char message[500];
+    char buff[25];
+    char num[3];
+    FILE * pFile;
+    strcpy(buff, "debug");
+    int2Ascii(num, file);
+    strcat(buff,num);
+    strcat(buff,".txt");
+    pFile = fopen (buff,"a");
+    if (pFile!=NULL)
+    {
+        int2Ascii(message, n);
+        fputs (message,pFile);
+        fclose (pFile);
+    }
+}
+
+void debugintmessage(char * message,int file)
+{
+    char buff[25];
+    char num[3];
+    FILE * pFile;
+    strcpy(buff, "debug");
+    int2Ascii(num, file);
+    strcat(buff,num);
+    strcat(buff,".txt");
+    pFile = fopen (buff,"a");
+
+    if (pFile!=NULL)
+    {
+        fputs (message,pFile);
         fclose (pFile);
     }
 }
