@@ -1,0 +1,44 @@
+For Topology Reader Syntax, the first line of the file must be either tree or    star. The next line is then the NUMBER OF HOSTS, then next line NUMBER OF SWITCHES. The subsequent lines start with first the number of the LINK. Then the address of of DESTINATION. Then the address of of source (other end of the link).
+
+For example if I were to create a tree with one switch and one host.
+Lets say the Host Is "0" and the Switch is "3", lets give the link number "1"
+
+****************
+IMPORTANT: ADDRESS OF SWITCHES NEED TO BE LAST
+For example If I have 5 hosts 4 switches, the addresses should be
+0,1,2,3,4 for each host and 5,6,7,8 for the switch addresses 
+****************
+The file should look like
+
+star
+3 //This is number of HOST
+1 //This is number of SWITCHES
+1 //This is the LINK number
+0 //This is the SOURCE of the Link
+3 //This is the DESTINATION of the Link
+
+There should be two links between each switch and host since links are unidirectional. So lets create two links between our switch and host.
+
+star
+3 //This is the the number of HOSTS
+1 //This is the number of SWITCHES
+1 //This is a LINK number
+0 //This is the SOURCE of the Link
+3 // This is the DESTINATION of the Link
+2 //This is a LINK nunber
+3 // This is the SOURCE of the Link
+0 // This is the DESTINATION of the Link
+
+Important: Do not use "//" or comments in the Topology file as those are unsupported. The only characters in the file should only be from 'tree' or 'star'. All the other characters should be numbers; EX:
+
+star
+3
+1
+0
+0
+3
+1
+3
+0
+
+
