@@ -517,6 +517,7 @@ while(1) {
       currhost = manChangeHost(manLinkArray->numlinks);
    else if (cmd == 'l')  { //link type
       linktype = manChangeLink(void);
+      //do we need to initialize anything else?
    }
    else printf("***Invalid command, you entered %c\n", cmd);
 }
