@@ -90,11 +90,7 @@ void int2Ascii(char c[], int value)
     int remainder;
     int neg=0;
     k = 0;
-
     if (value < 0) {
-//        c[0] = '\0';  /* return empty character string */
-//        printf("Error:  negative value passed to int2Ascii\n");
-//        return;
         neg = 1;
         value=value*-1;
     }
@@ -106,14 +102,21 @@ void int2Ascii(char c[], int value)
         remainder = remainder/10;
         k++;
     } while(remainder > 0);
+
+    if (neg==1)
+    {
+        reverse[k]='-';
+        k++;
+    }
     
     /* copy the reverse of reverse[] into c[] */
     for (i=0; i<k; i++) c[i] = reverse[k-i-1];
-    if (neg==1) {
-        c[k] = '-'; /* terminate c[] */
-        c[k+1] = '\0'; /* terminate c[] */
-    }
-    else
+    
+//    if (neg==1) {
+//        c[k] = '-'; /* terminate c[] */
+//        c[k+1] = '\0'; /* terminate c[] */
+//    }
+    
     c[k] = '\0'; /* terminate c[] */
 }
 

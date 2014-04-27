@@ -70,6 +70,7 @@ int main()
     netSetNetworkTopology(&top, & linkArray);
 #ifdef debug
     printf("Set the end nodes of the links\n");
+    Newdebugmessage("Manager PID: ", getpid(), 0, -42);
 #endif
     
     
@@ -107,7 +108,7 @@ int main()
         }
     }
 #ifdef debug
-    printf("Created nodes and spawned their own processes\n");
+    printf("Created Hosts and spawned their own processes\n");
 #endif
     
     int sw_end_addr = top.numhosts + top.numswitch;
@@ -123,6 +124,9 @@ int main()
             switchMain(&sstate);
         }
     }
+#ifdef debug
+    printf("Created Switches and spawned their own processes\n");
+#endif
     
     /*
      * The manager is connected to the hosts and doesn't

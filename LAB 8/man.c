@@ -94,19 +94,16 @@ int manReplyReceive(managerLink * manLink, char reply[])
 {
     int n;
     
-//#ifdef debug
-//    char deb[20];
-//    debugmessage("\nManRepRec: ");
-//#endif
+#ifdef debug
+    Newdebugmessage("manReplyReceivebegin", -42, -42, -42);
+#endif
+    
     n = read(manLink->fromHost[PIPEREAD],reply,250);
+    
+#ifdef debug
+    Newdebugmessage("manReplyReceiveend", n, -42, -42);
+#endif
     reply[n] = '\0';
-//#ifdef debug
-//    int2Ascii(deb, n);
-//    debugmessage(deb);
-//    debugmessage(" ");
-//    debugmessage(reply);
-//    debugmessage(" ");
-//#endif
     return n+1;
 }
 
@@ -421,6 +418,9 @@ void manDisplayHostState(char buffer[])
     
     char word[1000];
     
+#ifdef debug
+    Newdebugmessage("manDisplayHostState", 0, 0, -42);
+#endif
     findWord(word, buffer, 2);
     printf("Host physical ID: %s\n", word);
     findWord(word, buffer, 3);

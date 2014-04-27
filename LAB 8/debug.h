@@ -10,10 +10,13 @@
 #define LAB_8_debug_h
 
 void debuginit();
+void debugnuminit();
+
 void debugmessage(char * message);
 void debugmessageint(int n);
-void debugintmessageint(int n,int file);
-void debugintmessage(char * message,int file);
+void debugnummessageint(int n,int file);
+void debugnummessage(char * message,int file);
+void Newdebugmessage(char * message, int data1, int data2, int file);
 
 
 #endif

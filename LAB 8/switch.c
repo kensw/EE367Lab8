@@ -26,6 +26,7 @@
 #include <unistd.h>
 #include <fcntl.h>
 
+#include "debug.h"
 #include "main.h"
 #include "link.h"
 #include "man.h"
@@ -110,6 +111,9 @@ void TestIterate(switchState * sstate, switchLinks ** head)
 void switchInitState(switchState * sstate, int phys)
 {
     sstate->physid = phys;
+#ifdef debug
+    Newdebugmessage("Switch PID: ", sstate->physid, -42, -42);
+#endif
 }
 
 void switchRecvPacketBuff(switchState * sstate, int in_id, packetBuffer * pbuff)

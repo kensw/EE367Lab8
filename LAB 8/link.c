@@ -45,7 +45,7 @@
 #include "utilities.h"
 #include "main.h"
 #include "link.h"
-
+#include "debug.h"
 #define PIPEREAD  0
 #define PIPEWRITE 1
 #define TENMILLISEC 10000
@@ -104,13 +104,14 @@ int linkReceive(LinkInfo * link, packetBuffer * pbuff)
     char highbits;
     int type=0;
     int x = tot = 0;
-    do
-    {
+#ifdef debug
+    Newdebugmessage("linkReceivestart", -42, -42, -2);
+#endif
+//    do{
 //#ifdef debug
 //        printf("\nRECEIVING", word);
 //#endif debug
         n = 0;
-        
         if (link->linkType==UNIPIPE) { //may need to be outside of the dowhile
             n = read(link->uniPipeInfo.fd[PIPEREAD], buffer, 1000);
             if (n > 0) {
@@ -177,7 +178,7 @@ int linkReceive(LinkInfo * link, packetBuffer * pbuff)
         }
         tot=tot+n;
         x++;
-    }while (type==0);
+//    }while (type==0);
     return tot; /* Return length what was received on the link */
     
 }

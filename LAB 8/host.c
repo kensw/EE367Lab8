@@ -152,6 +152,10 @@ void hostMain(hostState * hstate)
     int  value;
     char replymsg[1000];   /* Reply message to be displayed at the manager */
     packetBuffer tmpbuff;
+#ifdef debug
+    debugnuminit(hstate->physid);
+#endif
+    
     
     while(1) {
         
@@ -159,16 +163,17 @@ void hostMain(hostState * hstate)
         int length; /* Size of string in pipe */
         length = hostCommandReceive(&(hstate->manLink),buffer);
 #ifdef debug
-        debugmessage("hostcommandrec ");
-        debugmessage(buffer);
-        debugmessage(": ");
-        debugmessageint(length);
-        debugmessage("\n");
+        debugnummessageint(getpid(),hstate->physid);
+        debugnummessage("hostcommandrec ",hstate->physid);
+        debugnummessage(buffer,hstate->physid);
+        debugnummessage(": ",hstate->physid);
+        debugnummessageint(length,hstate->physid);
+        debugnummessage("\n",hstate->physid);
 #endif
         
         if (length > 1) { /* Execute the manager's command */
 #ifdef debug
-            debugmessage("hostcommandrecexecute!\n");
+            debugnummessage("hostcommandrecexecute!\n",hstate->physid);
 #endif
             findWord(word, buffer, 1);
             if (strcmp(word, "SetNetAddr")==0) {
@@ -205,10 +210,16 @@ void hostMain(hostState * hstate)
                 hostReplySend(&(hstate->manLink), "DISPLAY", replymsg);
             }
         } /* end of if */
-        
+#ifdef debug
+        debugnummessage("hmainloopend\n",hstate->physid);
+#endif
+
         /* Check if there is an incoming packet */
         linkReceive(&(hstate->linkin), &tmpbuff);
         
+#ifdef debug
+        debugnummessage("linkReceivedone\n",hstate->physid);
+#endif
         /*
          * If there is a packet and if the packet's destination address
          * is the host's network address then store the packet in the
@@ -248,9 +259,9 @@ int hostCommandReceive(managerLink * manLink, char command[])
     int n;
     n = read(manLink->toHost[PIPEREAD],command,250);
 #ifdef debug
-    debugintmessageint(manLink->toHost[PIPEREAD],fork());
-    debugintmessageint(manLink->toHost[PIPEREAD],fork());
-    debugintmessageint(manLink->toHost[PIPEREAD],fork());
+    debugnummessageint(manLink->toHost[PIPEREAD],-1);
+    debugnummessageint(manLink->toHost[PIPEREAD],-1);
+    debugnummessageint(manLink->toHost[PIPEREAD],-1);
 #endif
     command[n] = '\0';
     return n+1;
@@ -289,12 +300,14 @@ void hostReplySend(managerLink * manLink, char replytype[], char replymsg[])
  */
 void hostInit(hostState * hstate, int physid)
 {
-    
     hostInitState(hstate, physid);     /* Initialize host's state */
     
     /* Initialize the receive and send packet buffers */
     hostInitRcvPacketBuff(&(hstate->rcvPacketBuff));
     hostInitSendPacketBuff(&(hstate->rcvPacketBuff));
+#ifdef debug
+    Newdebugmessage("Host PID: ", hstate->physid, -42, -42);
+#endif
 }
 
 /*

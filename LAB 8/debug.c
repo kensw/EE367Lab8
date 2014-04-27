@@ -11,8 +11,21 @@
 #include <string.h>
 #include "utilities.h"
 #include <time.h>
+#include <unistd.h>
+#include "debug.h"
 
 
+#define NADA -42
+
+//void debugpid(FILE * pFile)
+//{
+//    char buff[20];
+//    int2Ascii(buff, getpid());
+//    strcat(buff, " ");
+//    fputs(buff, pFile);
+//}
+//
+//
 void debuginit()
 {
     time_t rawtime;
@@ -23,6 +36,32 @@ void debuginit()
     
     FILE * pFile;
     pFile = fopen ("debug.txt","a");
+    if (pFile!=NULL)
+    {
+        fputs ("\n\n======================================================\n",pFile);
+        fputs ("BEGIN LOG ON ",pFile);
+        fputs (asctime (timeinfo),pFile);
+        fputs ("\n",pFile);
+        fclose (pFile);
+    }
+}
+
+void debugnuminit(int file)
+{
+    time_t rawtime;
+    struct tm * timeinfo;
+    
+    time ( &rawtime );
+    timeinfo = localtime ( &rawtime );
+    
+    char buff[25];
+    char num[3];
+    FILE * pFile;
+    strcpy(buff, "debug");
+    int2Ascii(num, file);
+    strcat(buff,num);
+    strcat(buff,".txt");
+    pFile = fopen (buff,"a");
     if (pFile!=NULL)
     {
         fputs ("\n\n======================================================\n",pFile);
@@ -46,7 +85,7 @@ void debugmessageint(int n)
     }
 }
 
-void debugintmessageint(int n,int file)
+void debugnummessageint(int n,int file)
 {
     char message[500];
     char buff[25];
@@ -60,12 +99,15 @@ void debugintmessageint(int n,int file)
     if (pFile!=NULL)
     {
         int2Ascii(message, n);
+        if (file<0) {
+            strcat(message,"\n");
+        }
         fputs (message,pFile);
         fclose (pFile);
     }
 }
 
-void debugintmessage(char * message,int file)
+void debugnummessage(char * message,int file)
 {
     char buff[25];
     char num[3];
@@ -90,6 +132,55 @@ void debugmessage(char * message)
     if (pFile!=NULL)
     {
         fputs (message,pFile);
+        fclose (pFile);
+    }
+}
+
+void Newdebugmessage(char * message, int data1, int data2, int file)
+{
+    char buff[250];
+    char num[5];
+    FILE * pFile;
+    strcpy(buff, "debug");
+    if (file!=NADA) {
+        int2Ascii(num, file);
+        strcat(buff,num);
+    }
+    strcat(buff,".txt");
+    pFile = fopen (buff,"a");
+    
+    if (pFile!=NULL)
+    {
+        if (strcmp(message, "INITIT")!=0)
+        {
+            int2Ascii(num,getpid());
+            strcpy(buff, num);
+            strcat(buff, " ");
+            strcat(buff, message);
+            strcat(buff, " ");
+            if (data1!=-42) {
+                int2Ascii(num, data1);
+                strcat(buff, num);
+                strcat(buff, ", ");
+            }
+            if (data2!=-42) {
+                int2Ascii(num, data2);
+                strcat(buff,num);
+            }
+            strcat(buff, "\n");
+            fputs (buff,pFile);
+        }
+        else
+        {
+            time_t rawtime;
+            struct tm * timeinfo;
+            time ( &rawtime );
+            timeinfo = localtime ( &rawtime );
+            fputs ("\n\n======================================================\n",pFile);
+            fputs ("BEGIN LOG ON ",pFile);
+            fputs (asctime (timeinfo),pFile);
+            fputs ("\n",pFile);
+        }
         fclose (pFile);
     }
 }
