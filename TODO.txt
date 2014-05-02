@@ -33,14 +33,10 @@ Improvement #3
 Currently implementing socket code in link.c, modified code to test
 for UNIPIPE(PIPE) or SOCKET(SOCKET). 
 
-link.h was modified to have SOCKET in enum portion of code. A
-structure might need to be implemented for SOCKET like UniPipeInfo,
-maybe struc called SocPipeInfo?
-
-Does struc LinkInfo in link.h need to be improved on?
-
 net.c has some use of linkType in a FOR loop, will need to figure out
 how to implement the creation of the SOCKET links. 
 
-
+Socket code is being implemented into link.c, man.c was modified
+slightly to fix compile errors. Having compile errors with main.c and
+switch.h
 
