@@ -12,6 +12,7 @@ typedef struct { /* Packet buffer */
    int new;     /* Indicates if the contents has been downloaded */
    int sendrcv;
    
+   
 } packetBuffer;
 
 

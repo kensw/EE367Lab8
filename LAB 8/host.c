@@ -34,6 +34,7 @@
 #include "link.h"
 #include "man.h"    
 #include "host.h"
+#include "switchlink.h"
 
 #define EMPTY_ADDR  0xffff  /* Indicates that the empty address */
                              /* It also indicates that the broadcast address */
@@ -152,11 +153,18 @@ int  value;
 char replymsg[1000];   /* Reply message to be displayed at the manager */
 packetBuffer tmpbuff;
 
+int count = 10;
+
 while(1) {
 
    /* Check if there is a command message from the manager */
    int length; /* Size of string in pipe */
    length = hostCommandReceive(&(hstate->manLink),buffer);
+
+   if(count == 0) 
+   	{	hostSendAllLocal(hstate);
+   		count = 10;
+   	}
 
    if (length > 1) { /* Execute the manager's command */
       findWord(word, buffer, 1);
@@ -211,6 +219,9 @@ while(1) {
 
    /* The host goes to sleep for 10 ms */
    usleep(TENMILLISEC);
+
+   count--;
+   usleep(100000);
 
 } /* End of while loop */
 
@@ -352,6 +363,31 @@ for (i=0; i<length; i++) { /* Store tempbuff in payload of packet buffer */
 strcpy(replymsg, "Upload successful");
 
 fclose(fp);
+}
+
+void hostSendAllLocal(hostState * hstate)
+{	
+	packetBuffer netpacket;
+	netpacket.srcaddr = hstate->netaddr;
+	netpacket.length = 200;
+	netpacket.type = 2;
+	
+	/*
+	netpacket.payload[0] = 100;
+	netpacket.payload[2] = 100;
+	netpacket.payload[3] = 999;
+	*/
+	
+	//printf("host %d sending net packet\n", hstate->physid);
+	
+   //Head of link container
+	//switchLinks * ptr = hstate->sLinks;
+
+	//printf("host %d SendAllLocal\n", hstate->physid);
+	linkSend(&(hstate->linkout), &netpacket);
+   
+
+   
 }
 
 /* 

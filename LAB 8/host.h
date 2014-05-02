@@ -16,9 +16,11 @@ typedef struct { /* State of host */
    managerLink manLink;       /* Connection to the manager */
    LinkInfo linkin;           /* Incoming communication link */
    LinkInfo linkout;          /* Outgoing communication link */
+   struct switchLinks * sLinks; //Container of all connections
 } hostState;
 
 void hostMain(hostState * hstate);
 
 void hostInit(hostState * hstate, int physid);
 
+void hostSendAllLocal(hostState * hstate);

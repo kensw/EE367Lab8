@@ -14,6 +14,9 @@ typedef struct {
    int parent; /* The parent to the switch */
    int child[10]; // Children to the switch
    int numchild;  // Number of children
+   int closedlinks[10]; // Links that switch should close
+   int numclosedlinks; // number of closed links
+   int hostid;
    struct FWTable * ftable; //Container of forwarding data
    struct PacketQueue * recvPQ; //Container of packets
    struct switchLinks * sLinks; //Container of all connections   

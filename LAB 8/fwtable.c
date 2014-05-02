@@ -3,7 +3,7 @@
 #include "fwtable.h"
 
 #define NOT_FOUND -1
-
+#define VALID 1
 
 
 // Creates a Table Entry for FWTable
@@ -43,7 +43,7 @@ FWTable ** fwTableSearch(FWTable ** head, int dest)
        return NULL;
    } else {
       indexptr = *head;
-      if(indexptr->dest_addr == dest){
+      if(indexptr->dest_addr == dest && indexptr->valid == VALID){
          return head;
       } else {
          return fwTableSearch(&(indexptr->next), dest);
@@ -60,6 +60,16 @@ void fwTableUpdate(FWTable ** head, int des_addr, int new_link, int val)
       (*des_index)->valid = val;
    }
 }
+
+void fwTableChangeValid(FWTable ** head, int des_addr, int val)
+{
+	FWTable ** des_index;
+	des_index = fwTableSearch(head, des_addr);
+	if(des_index != NULL){
+		(*des_index)->valid = val;
+	}
+}
+
 
 int linkDestSearch(FWTable ** head, int des)
 {

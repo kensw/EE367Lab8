@@ -240,7 +240,7 @@ int linkSend(LinkInfo * link, packetBuffer * pbuff)
     
     /* Used for DEBUG -- trace packets being sent */
     
-	if(pbuff->type != 1)
+	if(pbuff->type == 0)
 	printf("Link %d transmitted\n",link->linkID);
     return -1;
 }

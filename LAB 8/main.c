@@ -92,14 +92,11 @@ for (physid = 0; physid < top.numhosts; physid++) {
 int sw_end_addr = top.numhosts + top.numswitch;
 for(physid = top.numhosts; physid < sw_end_addr; physid++){
    pid = fork();
-   printf("DEBUG1 %d ", pid);
    if(pid == -1) {
       printf("Error occured forking for switch \n");
    } else if (pid == 0) {
       switchInitState(&sstate, physid);
-	    printf("DEBUG2 ");
       sstate.sLinks = getswitchLinks(&linkArray, physid, sstate.sLinks);
-	 	   printf("DEBUG3 ");
 	 //      TestIterate(&sstate, &sstate.sLinks);
    //   netCloseHostOtherLinks(&linkArray, physid);
       switchMain(&sstate);

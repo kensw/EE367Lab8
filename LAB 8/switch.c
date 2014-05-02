@@ -115,6 +115,8 @@ void switchInitState(switchState * sstate, int phys)
    sstate->distance = 0;
    sstate->parent = 0;
    sstate->numchild = 0;
+   sstate->numclosedlinks =0;
+   sstate->hostid = 999;
    printf("Switch %d's root is %d\n", sstate->physid, sstate->rootid);
 }
 
@@ -122,64 +124,86 @@ void switchRecvPacketBuff(switchState * sstate, int in_id, packetBuffer * pbuff)
 {
 	int i;
 	int childflag = 0;
-	if(pbuff->type != 1)
-		printf("RecvPacketBuff pbuff->type = %d\n", pbuff->type);
+	int closedlinkflag = 0;
+	switchLinks * ptr = sstate->sLinks;
 	
+	pbuff->valid = 1;
+	int src = pbuff->srcaddr;
+	LinkInfo * out = linkSearch(&(sstate->sLinks), in_id);
+	if(out == NULL){
+	      return;
+	}
+	int outlink = out->linkID;
 
-	if(pbuff->type == 0)
+	   /* Update table entry */
+	   /* First Case Table is Empty */
+	if(sstate->ftable == NULL){
+	      FWTable * fable = createTable(src, outlink, VALID);
+	      sstate->ftable = fable;
+	} 
+	else {
+	      FWTable ** search_index = fwTableSearch(&(sstate->ftable), src);
+	      //If the source address doesn't already exist
+	      //(we have not associated the address with a link yet)
+	      if(search_index == NULL){
+	         FWTable * fable = createTable(src, outlink, VALID);
+	         fwTableAdd(&(sstate->ftable), fable);
+		 }
+	}	
+
+
+	if(pbuff->type == 2)
 	{
-   pbuff->valid = 1;
-   int src = pbuff->srcaddr;
-   LinkInfo * out = linkSearch(&(sstate->sLinks), in_id);
-   if(out == NULL){
-      return;
-   }
-   int outlink = out->linkID;
-   /* Update table entry */
-   /* First Case Table is Empty */
-   if(sstate->ftable == NULL){
-      FWTable * fable = createTable(src, outlink, VALID);
-      sstate->ftable = fable;
-   } else {
-      FWTable ** search_index = fwTableSearch(&(sstate->ftable), src);
-      //If the source address doesn't already exist
-      //(we have not associated the address with a link yet)
-      if(search_index == NULL){
-         FWTable * fable = createTable(src, outlink, VALID);
-         fwTableAdd(&(sstate->ftable), fable);
-      }
-   }
-   enQueue((sstate->recvPQ), *pbuff, in_id);
+		for(i = 0; i < 9; i++) {
+			if(sstate->child[i] == pbuff->srcaddr)
+				childflag = 1;
+		}
+		if(childflag == 0) {
+			sstate->child[sstate->numchild] = pbuff->srcaddr;		
+			printf("NEW Child[%d] of switch %d is %d\n",sstate->numchild, sstate->physid, sstate->child[sstate->numchild]);
+			sstate->numchild++;		
+		}		
 	}
 	
-	else if(pbuff->type == 1 && sstate->rootid > pbuff->payload[0])
-	{
-
-		sstate->rootid = pbuff->payload[0];
-		sstate->distance = pbuff->payload[2] + 1;
-		sstate->parent = pbuff->srcaddr;
-		printf("NEW Root of switch %d is %d\n NEW Distance of switch %d is %d\n NEW Parent of switch %d is %d\n", sstate->physid, sstate->rootid, sstate->physid, sstate->distance, sstate->physid, sstate->parent);
-
-	}
-	else if(pbuff->type == 1 && pbuff->payload[3] == sstate->physid)
-		{
-			for(i = 0; i < 9; i++)
-			{
-				if(sstate->child[i] == pbuff->srcaddr)
-					childflag = 1;
+	if(pbuff->type == 1) { // if switch recieves local packet
+	
+//printf("switch %d recieved packet type = %d\n",sstate->physid, pbuff->type);
+	
+		if(sstate->rootid > pbuff->payload[0]) { // if neighbor has is closer to root, make it the switches parent
+			sstate->rootid = pbuff->payload[0];
+			sstate->distance = pbuff->payload[2] + 1;
+			sstate->parent = pbuff->srcaddr;
+			printf("NEW Root of switch %d is %d,  NEW Distance of switch %d is %d, NEW Parent of switch %d is %d\n", sstate->physid, sstate->rootid, sstate->physid, sstate->distance, sstate->physid, sstate->parent);
+		}
+		else if(pbuff->payload[3] == sstate->physid) { // if recieving network packet from a child
+				for(i = 0; i < 9; i++) {
+					if(sstate->child[i] == pbuff->srcaddr)
+						childflag = 1;
+				}
+				if(childflag == 0) {
+					sstate->child[sstate->numchild] = pbuff->srcaddr;		
+					printf("NEW Child[%d] of switch %d is %d\n",sstate->numchild, sstate->physid, sstate->child[sstate->numchild]);
+					sstate->numchild++;		
+				}	
 			}
+		else if(pbuff->srcaddr == sstate->parent) {
 			
-			if(childflag == 0)
-			{
-		sstate->child[sstate->numchild] = pbuff->srcaddr;		
-		printf("NEW Child[%d] of switch %d is %d\n",sstate->numchild, sstate->physid, sstate->child[sstate->numchild]);
-		sstate->numchild++;		
-			}	
-		}  
-//  	   deQueue(sstate->recvPQ); //Pop top after sending
-		return;
+		}
+		else { // network packet is not from child or parent, mark the link invalid in fwtable
+			//printf("Switch %d recieved local packet from non child/parent\n", sstate->physid);			
 	
+			fwTableChangeValid(&(sstate->ftable), pbuff->srcaddr, INVALID);
+
+		}	
+	}
+	else if(pbuff->type == 0){ // switch recieved regular packet
+
+		printf("switch %d recieved packet type = %d\n",sstate->physid, pbuff->type);
 	
+		 
+		enQueue((sstate->recvPQ), *pbuff, in_id);
+	}
+
 }
 
 void switchSendAll(switchState * sstate, int src, packetBuffer * recv)
@@ -193,48 +217,37 @@ void switchSendAll(switchState * sstate, int src, packetBuffer * recv)
    packetBuffer * temp = front(sstate->recvPQ);
    destaddr = temp->dstaddr;
    sourcelink = linksourcefront(sstate->recvPQ);
-   
- //  printf("switch %d sendAll, sourcelink: %d, destaddr: %d\n", sstate->physid, sourcelink, destaddr);
+   FWTable ** search_index;
  
- /*  
-   // Check if 
-   for(i = 0 ; i < sstate->numchild+1 ; i++)   
-   {
-	   if(destaddr == sstate->child[i] || destaddr == sstate->parent)	   
-   }
-   */
-   while(ptr != NULL) {
-      if(ptr->linkin.linkID != src) {
-	
-		 // Check if linkout is a parent or child
-		   for(i = 0 ; i < sstate->numchild+1 ; i++)   
-		   {
- 	   	  	if(ptr->linkout.uniPipeInfo.physIdDst == sstate->child[i])	   
-			{	linkSend(&(ptr->linkout), recv);
-				exitflag = 1;
-				break;
-			}
-	//		printf("ptr->linkout->UniPipeInfo->physIdDst = %d,  ptr->linkout.linkID = %d, sstate->child[i] = %d \n",ptr->linkout.uniPipeInfo.physIdDst, ptr->linkout.linkID, sstate->child[i]);
-			}
-			/*
-		 printf("switch %d ptr->linkout.ID: %d \n", sstate->physid, ptr->linkout.linkID);
 
-		 if(ptr->linkout.linkHost == 0)
-		 {
-			 printf("sending to host %d\n", ptr->linkout.uniPipeInfo.physIdDst);
-			 linkSend(&(ptr->linkout), recv);
-	 	 }
-		 */
+debugtable(&(sstate->ftable));
+ 
+	while(ptr != NULL) {
+      	if(ptr->linkin.linkID != src) { 
+			
+			// Check forwarding table if entry is valid
+			
+    	      search_index = fwTableSearch(&(sstate->ftable), ptr->linkout.uniPipeInfo.physIdDst);
+		 printf("link %d has validity == %d", ptr->linkout.linkID, (*search_index)->valid);
+		 
+    	      //If the source address doesn't already exit
+    	      //(we have not associated the address with a link yet)
+    	      if((*search_index)->valid != INVALID){
+    	       linkSend(&(ptr->linkout), recv);
+    		 }
+		 //*/
+			
 
-		 if(ptr->linkout.uniPipeInfo.physIdDst == sstate->parent || ptr->isSwitchLink == 1)
-			 {linkSend(&(ptr->linkout), recv);}
+       	       linkSend(&(ptr->linkout), recv);
 
+		}
+	   exitflag = 0;
+	   ptr = ptr->next;
+	}
+
+	deQueue(sstate->recvPQ); 
 	 		
-	 }
-	 exitflag = 0;
-      ptr = ptr->next;
-   }
-   deQueue(sstate->recvPQ); //Pop top after sending
+
 }
 
 void switchSendAllLocal(switchState * sstate)
@@ -247,6 +260,7 @@ void switchSendAllLocal(switchState * sstate)
 	netpacket.payload[0] = sstate->rootid;
 	netpacket.payload[2] = sstate->distance;
 	netpacket.payload[3] = sstate->parent;
+	
 	
 //	printf("Switch %d, Netpacket payload[0]-rootid = %d\n", sstate->physid, netpacket.payload[0]);
 //	printf("Switch %d, Netpacket payload[2]-distance = %d\n", sstate->physid, netpacket.payload[2]);
@@ -328,7 +342,8 @@ void switchMain(switchState * sstate)
 	packetBuffer pb;
      scanAllLinks(sstate, &pb); 
     	
-	if(!isEmpty(sstate->recvPQ) && count != 0) {		  
+	if(!isEmpty(sstate->recvPQ) && count != 0) {	
+		//printf("switch %d is not empty", sstate->physid);	  
        switchSendPacketBuff(sstate);
 	}   
 	else if(count == 0) 
@@ -340,6 +355,5 @@ void switchMain(switchState * sstate)
 	 usleep(100000);
    }
 
-   count--;
 }
 

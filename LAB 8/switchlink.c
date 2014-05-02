@@ -20,7 +20,6 @@ switchLinks * constructLink(LinkInfo in, LinkInfo out)
 
 switchLinks * getswitchLinks(linkArrayType * linkArray, int switchID, switchLinks * head)
 {
-		   printf("DEBUG 4 INSIDE getswitchlinks");
    int i,j;
    for(i = 0; i < linkArray->numlinks; i++) {
       if(linkArray->link[i].uniPipeInfo.physIdDst == switchID) {
