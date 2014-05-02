@@ -31,17 +31,10 @@ typedef struct {  /* Has all the information to implement a link */
    int port;		// port number
 } LinkInfo;
 
-
 typedef struct {
    int numlinks;
    LinkInfo link[NUMLINKS];
 } linkArrayType;
-
-/*
-typedef struct {
-   int port;
-} Socket;
-*/
 
 /* Transmit the packet in pbuff on the link */
 int linkSend(LinkInfo * link, packetBuffer * pbuff);
