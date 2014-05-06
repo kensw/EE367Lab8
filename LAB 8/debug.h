@@ -8,6 +8,7 @@
 
 #ifndef LAB_8_debug_h
 #define LAB_8_debug_h
+#define NADA -42
 
 void debuginit();
 void debugnuminit();
@@ -18,5 +19,5 @@ void debugnummessageint(int n,int file);
 void debugnummessage(char * message,int file);
 void Newdebugmessage(char * message, int data1, int data2, int file);
 
-
+#define debug
 #endif

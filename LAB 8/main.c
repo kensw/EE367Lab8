@@ -3,6 +3,7 @@
 #include <string.h>
 #include <sys/types.h>
 #include <sys/wait.h>
+#include <signal.h>
 
 #include <unistd.h>
 #include <fcntl.h>
@@ -16,10 +17,8 @@
 #include "net.h"
 #include "switchlink.h"
 #include "switch.h"
-
-#ifdef debug
 #include "debug.h"
-#endif
+
 
 #define EMPTY_ADDR  0xffff  /* Indicates that the empty address */
 /* It also indicates that the broadcast address */
@@ -70,7 +69,7 @@ int main()
     netSetNetworkTopology(&top, & linkArray);
 #ifdef debug
     printf("Set the end nodes of the links\n");
-    Newdebugmessage("Manager PID: ", getpid(), 0, -42);
+    Newdebugmessage("Manager ID", -7, NADA, NADA);
 #endif
     
     
@@ -165,6 +164,7 @@ int lengthpbuff(packetBuffer pbj)
     int length = 0;
     do{
         length = length + pbj.payloads[i].length;
+        i++;
     } while (pbj.payloads[i].type != 1);
     return length;
 }

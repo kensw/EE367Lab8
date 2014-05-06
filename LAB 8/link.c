@@ -46,6 +46,7 @@
 #include "main.h"
 #include "link.h"
 #include "debug.h"
+#include "sleep.h"
 #define PIPEREAD  0
 #define PIPEWRITE 1
 #define TENMILLISEC 10000
@@ -143,7 +144,13 @@ int linkReceive(LinkInfo * link, packetBuffer * pbuff)
                 pbuff->payloads[x].length = ascii2Int(word);
                 
                 
-                findWord(word, buffer, 4); /* Payload */
+                findWord(word, buffer, 4); /* type */
+#ifdef debug
+                printf("\ntype:%s", word);
+#endif
+                
+                
+                findWord(word, buffer, 5); /* Payload */
 #ifdef debug
                 printf("\npay:%s\n", word);
 #endif
@@ -167,6 +174,7 @@ int linkReceive(LinkInfo * link, packetBuffer * pbuff)
                 } /* end of for */
                 
                 pbuff->payloads[x].message[k] = '\0';
+                pbuff->paynum++;
                 pbuff->valid=1;
                 pbuff->new=1;
             } else {
@@ -186,23 +194,28 @@ int linkReceive(LinkInfo * link, packetBuffer * pbuff)
 /*
  * Sends the packet in pbuff on the outgoing link.
  */
-int linkSend(LinkInfo * link, packetBuffer * pbuff)
+int linkSend(LinkInfo * link, packetBuffer * pbuff, int x)
 {
     char sendbuff[1000];  /* buffer to build the message */
     char word[1000];
-    char newpayload[1000];
+    char newpayload[2000];
     int  count;
 //    int  sendbuffptr;
 //    int  newptr;
     int  k;
     char lowbits;
     char highbits;
-    int x = -1;
+//    int x = -1;
+//    
+//    
+//    //start sending loop here
+//    do {
+//        x++;
     
-    
-    //start sending loop here
-    do {
-        x++;
+#ifdef debug
+        printf("Sending packet #%d ",x);
+        printf("packet length: %d\n", pbuff->payloads[x].length);
+#endif
         /* Check if this send should be aborted */
         if (pbuff->valid == 0) {
             printf("packet invalid\n");
@@ -237,10 +250,6 @@ int linkSend(LinkInfo * link, packetBuffer * pbuff)
         int2Ascii(word, pbuff->payloads[x].type);  /* Append payload TYPE */
         appendWithSpace(sendbuff, word);
         
-#ifdef debug
-        printf("\nsbuff:%s",sendbuff);
-#endif
-        
         /*
          * We will transform the payload so that
          * a byte will be converted into two
@@ -272,18 +281,24 @@ int linkSend(LinkInfo * link, packetBuffer * pbuff)
         newpayload[2*k] = '\0';
         
         appendWithSpace(sendbuff, newpayload);
-        
+    
         //send message here
         if (link->linkType==UNIPIPE) {
             write(link->uniPipeInfo.fd[PIPEWRITE],sendbuff,strlen(sendbuff));
         }
+    
 #ifdef debug
-        printf("Part %d transmitted\n",x);
+    Newdebugmessage("Part transmitted:",x, NADA,NADA);
+    Newdebugmessage(sendbuff,NADA, NADA,NADA);
+    printf("sbuff:%s\n\n",sendbuff);
 #endif
         //end sending loop here
-    } while (pbuff->payloads[x].type != 1);
+//    } while (pbuff->payloads[x].type != 1);
     /* Used for DEBUG -- trace packets being sent */
+#ifdef debug
     printf("Link %d transmitted\n",link->linkID);
+    Newdebugmessage("Link %d transmitted",link->linkID, NADA,NADA);
+#endif
     return 1;
 }
 

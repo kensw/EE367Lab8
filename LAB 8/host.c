@@ -20,7 +20,6 @@
  */
 
 
-//Trivial edit to test git
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -111,6 +110,7 @@ void hostTransmitPacket(hostState * hstate, char word[], char replymsg[])
 {
     char dest[1000];
     int  dstaddr;
+    int i;
     
     /* Get the destination address from the manager's command message (word[]) */
     findWord(dest, word, 2);
@@ -124,8 +124,10 @@ void hostTransmitPacket(hostState * hstate, char word[], char replymsg[])
     
     
     /* Transmit the packet on the link */
-    linkSend(&(hstate->linkout), &(hstate->sendPacketBuff));
-    
+    for (i=0; i<hstate->sendPacketBuff.paynum; i++) {
+        linkSend(&(hstate->linkout), &(hstate->sendPacketBuff), i);
+    }
+        
     /* Message to be sent back to the manager */
     strcpy(replymsg,"Packet sent");
 }
@@ -306,7 +308,7 @@ void hostInit(hostState * hstate, int physid)
     hostInitRcvPacketBuff(&(hstate->rcvPacketBuff));
     hostInitSendPacketBuff(&(hstate->rcvPacketBuff));
 #ifdef debug
-    Newdebugmessage("Host PID: ", hstate->physid, -42, -42);
+    Newdebugmessage("Host physical ID: ", hstate->physid, NADA,NADA);
 #endif
 }
 
@@ -325,7 +327,6 @@ void hostInitSendPacketBuff(packetBuffer * packetbuff)
  */
 void hostUploadPacket(hostState * hstate, char fname[], char replymsg[])
 {
-    char c;
     FILE * fp;
     char path[MAXBUFFER];  /* Path to the file */
     char tempbuff[MAXBUFFER]; /* A temporary buffer */
@@ -335,6 +336,9 @@ void hostUploadPacket(hostState * hstate, char fname[], char replymsg[])
     /*
      * Upload the file into tempbuff
      */
+#ifdef debug
+    Newdebugmessage("uploadstart!", NADA, NADA, NADA);
+#endif
     
     if (hstate->maindirvalid == 0) {
         strcpy(replymsg, "Upload aborted:  the host's main directory is not yet chosen");
@@ -353,12 +357,24 @@ void hostUploadPacket(hostState * hstate, char fname[], char replymsg[])
         return;
     }
     
-    length = fread(tempbuff, 1, PAYLOAD_LENGTH+1, fp);
+    length = fread(tempbuff, 1, NEW_PAYLOAD_L*10+1, fp);
+    
+#ifdef debug
+    Newdebugmessage("Tempbuff. Length:", length, NADA, NADA);
+//    Newdebugmessage(tempbuff, NADA, NADA, NADA);
+#endif
     
     if (length==0) {
         strcpy(replymsg, "Upload aborted: error in reading the file");
         return;
     }
+    
+#ifdef debug
+    else if (length > PAYLOAD_LENGTH) {
+        Newdebugmessage("uploading large file! Length:", length, NADA, NADA);
+    }
+#endif
+    
     else if (length > NEW_PAYLOAD_L*10) { //changed
         strcpy(replymsg, "Upload aborted: file is too big");
         return;
@@ -369,7 +385,7 @@ void hostUploadPacket(hostState * hstate, char fname[], char replymsg[])
     /* Fill in send packet buffer */
     
     hstate->sendPacketBuff.valid=1;
-//    hstate->sendPacketBuff.length=length;
+    hstate->sendPacketBuff.messlength=length;
     
      //initialize payloadbuff
     int x;
@@ -381,21 +397,41 @@ void hostUploadPacket(hostState * hstate, char fname[], char replymsg[])
 //    }
     
     //fill in payloadbuff
+    
+#ifdef debug
+    Newdebugmessage("fill in payloadbuff", NADA, NADA, NADA);
+#endif
 
     for (i=x=y=0; i<length; i++) { /* Store tempbuff in payloads of payload buffer of packet buffer */
         hstate->sendPacketBuff.payloads[y].message[x]=tempbuff[i];
+        
+#ifdef debug
+        Newdebugmessage(hstate->sendPacketBuff.payloads[y].message, NADA, NADA, NADA);
+#endif
+        
         x++;
         
         if (x>NEW_PAYLOAD_L)
         {
             hstate->sendPacketBuff.payloads[y].length=x;
+            hstate->sendPacketBuff.payloads[y].type=0;
             x=0;
             y++;
         }
     }
+    hstate->sendPacketBuff.payloads[y].length=x;
+    hstate->sendPacketBuff.payloads[y].type=1;
+    hstate->sendPacketBuff.paynum=y+1;
+#ifdef debug
+    Newdebugmessage("paynum:", hstate->sendPacketBuff.paynum, NADA, NADA);
+#endif
     
     /* Message to the manager */
     strcpy(replymsg, "Upload successful");
+    
+#ifdef debug
+    Newdebugmessage(replymsg, hstate->sendPacketBuff.payloads[y].length, hstate->sendPacketBuff.payloads[y].type, NADA);
+#endif
     
     fclose(fp);
 }
@@ -429,7 +465,9 @@ void hostDownloadPacket(hostState * hstate, char fname[], char replymsg[])
     char path[MAXBUFFER];  /* Path to the file */
     char tempbuff[MAXBUFFER]; /* A temporary buffer */
     
-    
+#ifdef debug
+    Newdebugmessage("hostDownloadPacket start",NADA,NADA, NADA);
+#endif
     /* Create a path to the file and then open it */
     
     if (hstate->rcvPacketBuff.valid == 0) {
@@ -441,34 +479,40 @@ void hostDownloadPacket(hostState * hstate, char fname[], char replymsg[])
         strcpy(replymsg, "Download aborted: the host's main directory is not yet chosen");
         return;
     }
-    
+#ifdef debug
+    Newdebugmessage("hostDownloadPacket checks done",NADA,NADA, NADA);
+#endif
     strcpy(path,"");
     strcat(path, hstate->maindir);
     strcat(path, "/");
     strcat(path, fname);
     printf("host:  path to the file: %s\n",path);
     fp = fopen(path,"wb");
+    fputs("",fp); //clear file
+    fclose(fp);
+    fp = fopen(path,"a");
+
+#ifdef debug
+    Newdebugmessage("fill download buffer", NADA,NADA, NADA);
+#endif
     
     /* Download the packet buffer payload into the tempbuff */
-    int x;
-    int y;
     int i;
-    for (i=x=y=0; lengthpbuff(hstate->rcvPacketBuff); i++) { /* Store tempbuff in payloads of payload buffer of packet buffer */
-        tempbuff[i]=hstate->rcvPacketBuff.payloads[y].message[x];
-        x++;
-        
-        if (x>NEW_PAYLOAD_L)
-        {
-            x=0;
-            y++;
-        }
+#ifdef debug
+    Newdebugmessage("paynum,1st paylen: ", hstate->rcvPacketBuff.paynum, hstate->rcvPacketBuff.payloads[i].length, NADA);
+#endif
+    for (i=0; i<hstate->rcvPacketBuff.paynum; i++) { /* Store tempbuff in payloads of payload buffer of packet buffer */
+        fwrite(hstate->rcvPacketBuff.payloads[i].message,1,hstate->rcvPacketBuff.payloads[i].length,fp);
+#ifdef debug
+        Newdebugmessage(hstate->rcvPacketBuff.payloads[i].message, hstate->rcvPacketBuff.payloads[i].length, NADA, NADA);
+#endif
     }
-    
-    /* Put tempbuff into file */
-    if (hstate->rcvPacketBuff.new == 1) {
-        fwrite(tempbuff,1,lengthpbuff(hstate->rcvPacketBuff),fp);
-        hstate->rcvPacketBuff.new=0;
-    }
+//    
+//    /* Put tempbuff into file */
+//    if (hstate->rcvPacketBuff.new == 1) {
+//        fwrite(tempbuff,1,lengthpbuff(hstate->rcvPacketBuff),fp);
+//        hstate->rcvPacketBuff.new=0;
+//    }
     
     /* Message sent to the manager */
     strcpy(replymsg, "Download successful");

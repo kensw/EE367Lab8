@@ -94,14 +94,13 @@ int manReplyReceive(managerLink * manLink, char reply[])
 {
     int n;
     
-#ifdef debug
-    Newdebugmessage("manReplyReceivebegin", -42, -42, -42);
-#endif
-    
     n = read(manLink->fromHost[PIPEREAD],reply,250);
-    
+
 #ifdef debug
-    Newdebugmessage("manReplyReceiveend", n, -42, -42);
+    char buff[500];
+    strcpy(buff, "MANRR:");
+    strcat(buff, reply);
+    Newdebugmessage(buff, n+1, NADA, NADA);
 #endif
     reply[n] = '\0';
     return n+1;
@@ -494,11 +493,8 @@ void manMain(manLinkArrayType * manLinkArray)
         /* Execute the command */
         if (cmd == 'q') return;
         else if (cmd == 'd') {
-            printf("blah\n");
             manGetHostState(&(manLinkArray->link[currhost]));
-            printf("blah\n");
             manWaitForReply(&(manLinkArray->link[currhost]), cmd);
-            printf("blah\n");
             
         }
         else if (cmd == 's') {

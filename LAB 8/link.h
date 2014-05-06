@@ -36,7 +36,7 @@ typedef struct {
 } linkArrayType;
 
 /* Transmit the packet in pbuff on the link */
-int linkSend(LinkInfo * link, packetBuffer * pbuff);
+int linkSend(LinkInfo * link, packetBuffer * pbuff, int x);
 
 /* Downloads a packet from the link into pbuff */
 int linkReceive(LinkInfo * link, packetBuffer * pbuff);

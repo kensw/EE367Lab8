@@ -112,7 +112,7 @@ void switchInitState(switchState * sstate, int phys)
 {
     sstate->physid = phys;
 #ifdef debug
-    Newdebugmessage("Switch PID: ", sstate->physid, -42, -42);
+    Newdebugmessage("Switch physical ID: ", sstate->physid, NADA,NADA);
 #endif
 }
 
@@ -149,7 +149,7 @@ void switchSendAll(switchState * sstate, int src, packetBuffer * recv)
     switchLinks * ptr = sstate->sLinks;
     while(ptr != NULL) {
         if(ptr->linkin.linkID != src) {
-            linkSend(&(ptr->linkout), recv);
+            linkSend(&(ptr->linkout), recv, 0); //single send
         }
         ptr = ptr->next;
     }
@@ -172,7 +172,7 @@ void switchSendPacketBuff(switchState * sstate)
     } else {
         //Entry exists
         LinkInfo * out = outputLink(&(sstate->sLinks), dest_link);
-        linkSend(out, temp);
+        linkSend(out, temp, 0); //single send
         deQueue(sstate->recvPQ); //Pop top after sending
     }
     //debugtable(&(sstate->ftable));

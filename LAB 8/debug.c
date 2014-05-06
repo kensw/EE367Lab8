@@ -15,7 +15,6 @@
 #include "debug.h"
 
 
-#define NADA -42
 
 //void debugpid(FILE * pFile)
 //{
@@ -30,18 +29,20 @@ void debuginit()
 {
     time_t rawtime;
     struct tm * timeinfo;
+    char buff[500];
     
     time ( &rawtime );
     timeinfo = localtime ( &rawtime );
     
     FILE * pFile;
-    pFile = fopen ("debug.txt","a");
+    pFile = fopen ("debug.txt","w");
     if (pFile!=NULL)
     {
-        fputs ("\n\n======================================================\n",pFile);
-        fputs ("BEGIN LOG ON ",pFile);
-        fputs (asctime (timeinfo),pFile);
-        fputs ("\n",pFile);
+        strcpy(buff, "\n\n======================================================\n");
+        strcat(buff, "BEGIN LOG ON ");
+        strcat(buff, asctime (timeinfo));
+        strcat(buff, "\n\0");
+        fputs(buff, pFile);
         fclose (pFile);
     }
 }
@@ -153,7 +154,7 @@ void Newdebugmessage(char * message, int data1, int data2, int file)
     {
         if (strcmp(message, "INITIT")!=0)
         {
-            int2Ascii(num,getpid());
+            int2Ascii(num,getpid()-getppid()-6);
             strcpy(buff, num);
             strcat(buff, " ");
             strcat(buff, message);
@@ -167,7 +168,7 @@ void Newdebugmessage(char * message, int data1, int data2, int file)
                 int2Ascii(num, data2);
                 strcat(buff,num);
             }
-            strcat(buff, "\n");
+            strcat(buff, "\n\0");
             fputs (buff,pFile);
         }
         else
